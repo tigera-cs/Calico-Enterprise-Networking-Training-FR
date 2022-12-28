@@ -85,7 +85,7 @@ NAME                                          READY   STATUS    RESTARTS   AGE
 calico-prometheus-operator-6557c5bc57-6dbqk   0/1     Pending   0          81s
 ```
 
-9. tigera-prometheus operator should be in Pending STATUS. Let's run the following command and check the Events section of the pod.
+9. tigera-prometheus operator should be in the Pending STATUS. Let's run the following command and check the **Events:** section of the pod. As indicated in the Warning message, the pod is not running because two nodes have the taint "node.kubernetes.io/not-ready". The reason for this taint is because the CNI plugin is not running in this cluster yet.
 
 ```
 kubectl describe pods -n tigera-prometheus
