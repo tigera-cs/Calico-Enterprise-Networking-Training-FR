@@ -98,14 +98,26 @@ Events:
   Warning  FailedScheduling  43s (x4 over 3m47s)  default-scheduler  0/3 nodes are available: 1 node(s) had taint {node-role.kubernetes.io/master: }, that the pod didn't tolerate, 2 node(s) had taint {node.kubernetes.io/not-ready: }, that the pod didn't tolerate.
 ```
 
-
-Now, we must specify the pull secret we will use to download the required images from tigera:
+10. This lab directly downloads the images from quay.io/tigera, which requires authentication. Run the following command to create the secret necessary to pull the images.
 
 ```
 kubectl create secret generic tigera-pull-secret \
     --from-file=.dockerconfigjson=/home/tigera/config.json \
     --type=kubernetes.io/dockerconfigjson -n tigera-operator
 ```
+
+11. We also need to create the pull secret in the tigera-prometheus namespace and patch the prometheus operator deployment.
+
+```
+kubectl create secret generic tigera-pull-secret \
+    --type=kubernetes.io/dockerconfigjson -n tigera-prometheus \
+    --from-file=.dockerconfigjson=/home/tigera/config.json
+```
+```
+kubectl patch deployment -n tigera-prometheus calico-prometheus-operator \
+    -p '{"spec":{"template":{"spec":{"imagePullSecrets":[{"name": "tigera-pull-secret"}]}}}}'
+```
+
 
 We will apply now the Custom Resource Definitions:
 
