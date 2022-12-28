@@ -7,3 +7,6 @@ This lab provides the instructions to:
 
 
 ### Install Calico Enterprise
+
+Upstream Kubernetes by default does not provide a network interface plugin. In this lab environment, Kubernetes has been preinstalled, but as your network plugin is not installed yet, your nodes will appear as NotReady. This section walks you through the required steps to install Calico Enteprise as both the CNI provider and network policy engine provider.
+
