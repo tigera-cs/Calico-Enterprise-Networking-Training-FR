@@ -8,6 +8,12 @@ The following diagram depicts the lab setup used for the entire training.
 ![image](https://user-images.githubusercontent.com/29644478/209869545-03ae6c68-940d-4570-887e-a25dd7223eae.png)
 
 
+Followings is a short description of each nodes in the lab.
+
+* Control1 is Kubernetes master node and runs Kubernetes control plane pods.
+* Worker1 is a Kubernetes worker node.
+* Worker2 is a Kubernetes worker node.
+* Bastion is a node outside the Kubernetes cluster and is used to run kubectl/calicoctl commands. This node also runs a standalone instance of bird and is used for bgppeering in the relevant lab modules. Finally, since this node is outside the cluster, it is for external external connectivity and testing when needed.
 
 Followings are the CIDRs used to build the trainibg lab environment.
 
