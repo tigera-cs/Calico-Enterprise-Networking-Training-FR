@@ -21,9 +21,8 @@ ip-10-0-1-20.us-west-1.compute.internal   NotReady   control-plane,master   95m 
 ip-10-0-1-30.us-west-1.compute.internal   NotReady   <none>                 94m   v1.23.14
 ip-10-0-1-31.us-west-1.compute.internal   NotReady   <none>                 94m   v1.23.14
 ```
-### 1.1.2. Prepare the storage
 
-First configure storage for Calico Enterprise, we will use AWS EBS provided by the AWS cloud provider integration.
+2. Calico Enterprise uses ElasticSearch to store various logs such as flowlogs, DNS logs, and all others that it collects over the network. ElasticSearch requires persistent storage to store the data. This lab uses AWS EBS to provide persistent storage for ElasticSearch. Apply the following manifest to create the AWS EBS.
 
 ```
 kubectl apply -f -<<EOF
