@@ -16,4 +16,4 @@ Followings are the CIDRs used to build the trainibg lab environment.
 * 10.49.0.0/16 Kubernetes Service CIDR (via kubeadm --service-cidr)
 
 
-## Hands-on modules
+## Lab modules
