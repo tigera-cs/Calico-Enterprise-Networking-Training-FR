@@ -5,7 +5,8 @@ This is the hands-on lab guide for Calico Enterprise networking training.
 
 The following diagram depicts the lab setup used for the entire training.
 
-![image](https://user-images.githubusercontent.com/29644478/209869545-03ae6c68-940d-4570-887e-a25dd7223eae.png)
+![image](https://user-images.githubusercontent.com/29644478/209876092-6edd1f28-c429-4c41-ab49-1257524e5e5a.png)
+
 
 
 Followings is a short description of each node in the lab.
