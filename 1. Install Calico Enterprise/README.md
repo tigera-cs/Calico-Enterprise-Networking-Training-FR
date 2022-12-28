@@ -57,10 +57,14 @@ kubectl create -f https://docs.tigera.io/manifests/tigera-operator.yaml
 
 ```
 
-We need to implement an operator for the prometheus component too:
+5. Calico Enterprise Manager UI uses Prometheus to provide out-of-the-box metrics in the various sections of CE Manager UI such as the dashboard page, security policies, and others. Calico Enterprise uses Prometheus operator to deploy Prometheus server and Alertmanager. Apply the following manifest to deploy the Prometheus operator.
+
+**Note:** Prometheus operator that ships with Calico Enterprise is an optional component and can be replaced with the customer's Prometheus operator if needed. However, a Prometheus operator must be deployed in the cluster and watch the "tigera-prometheus" namespace to deploy the required Prometheus and Alertmanager resources. Customer's instance of Prometheus operator can be deployed in any namesapce.
+
 
 ```
 kubectl create -f https://docs.tigera.io/manifests/tigera-prometheus-operator.yaml
+
 ```
 
 Check tigera-operator has been successfully rolled out:
