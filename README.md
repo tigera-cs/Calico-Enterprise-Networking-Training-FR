@@ -15,5 +15,13 @@ Followings are the CIDRs used to build the trainibg lab environment.
 * 10.48.0.0/16 Kubernetes Pod Network (via kubeadm --pod-network-cidr)
 * 10.49.0.0/16 Kubernetes Service CIDR (via kubeadm --service-cidr)
 
+## SSH access to the nodes
+
+To ssh into the lab instances, type the following commands.
+
+* ssh control1 
+* ssh worker1
+* ssh worker2
+
 
 ## Lab modules
