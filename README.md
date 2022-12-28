@@ -8,7 +8,7 @@ The following diagram depicts the lab setup used for the entire training.
 ![image](https://user-images.githubusercontent.com/29644478/209869545-03ae6c68-940d-4570-887e-a25dd7223eae.png)
 
 
-Followings is a short description of each nodes in the lab.
+Followings is a short description of each node in the lab.
 
 * Control1 is Kubernetes master node and runs Kubernetes control plane pods.
 * Worker1 is a Kubernetes worker node.
