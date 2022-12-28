@@ -22,7 +22,7 @@ ip-10-0-1-30.us-west-1.compute.internal   NotReady   <none>                 94m 
 ip-10-0-1-31.us-west-1.compute.internal   NotReady   <none>                 94m   v1.23.14
 ```
 
-2. Calico Enterprise uses ElasticSearch to store various logs such as flowlogs, DNS logs, and all others that it collects over the network. ElasticSearch requires persistent storage to store the data. This lab uses AWS EBS to provide persistent storage for ElasticSearch. Apply the following manifest to create the AWS EBS.
+2. Calico Enterprise uses ElasticSearch to store various logs such as flowlogs, DNS logs, and all others that it collects over the network. ElasticSearch requires persistent storage to store the data. This lab uses AWS EBS to provide persistent storage for ElasticSearch. Apply the following manifest to create the storage class, which enables us to dynamically provision AWS EBS storage.
 
 ```
 kubectl apply -f -<<EOF
@@ -40,7 +40,7 @@ volumeBindingMode: WaitForFirstConsumer
 EOF
 ```
 
-Make sure the storageclass has been created successfully:
+3. Make sure the StorageClass has been created successfully.
 
 ```
 kubectl get storageclass
@@ -48,4 +48,109 @@ kubectl get storageclass
 ```
 NAME                   PROVISIONER             RECLAIMPOLICY   VOLUMEBINDINGMODE      ALLOWVOLUMEEXPANSION   AGE
 tigera-elasticsearch   kubernetes.io/aws-ebs   Retain          WaitForFirstConsumer   true                   10s
+```
+
+4. The Tigera Operator is a Kubernetes operator and provides a well-defined API for how you install, configure, and run Calico Enterprise. Tigera operator also automates and controls the the lifecycle of a Calico Enterprise deployment. Tigera operator manifest configures the necessary resources such as custom resource definitions, namespaces, services accounts, clusterroles, etc so that cluster is ready to deploy other calico Enterprise components. Get yourself familiar with the content of the manifest and create it in the cluster.
+
+```
+kubectl create -f https://docs.tigera.io/manifests/tigera-operator.yaml
+
+```
+
+We need to implement an operator for the prometheus component too:
+
+```
+kubectl create -f https://docs.tigera.io/manifests/tigera-prometheus-operator.yaml
+```
+
+Check tigera-operator has been successfully rolled out:
+
+```
+kubectl rollout status -n tigera-operator deployment tigera-operator
+```
+
+Now, we must specify the pull secret we will use to download the required images from tigera:
+
+```
+kubectl create secret generic tigera-pull-secret \
+    --from-file=.dockerconfigjson=/home/tigera/config.json \
+    --type=kubernetes.io/dockerconfigjson -n tigera-operator
+```
+
+We will apply now the Custom Resource Definitions:
+
+```
+kubectl apply -f training-lab-workbooks/advanced/1-initial-setup/lab_manifests/custom-resources.yaml
+```
+
+And check the components start progressing:
+
+```
+watch kubectl get tigerastatus
+```
+
+### 1.1.4. Apply the license
+
+Wait util the `apiserver` shows an status of `True` under the `Available` column, then press `Ctrl+C` to return to the prompt, and apply the license file:
+
+```
+kubectl create -f /home/tigera/license.yaml
+```
+
+Check all components become available before proceding further (this can take few minutes):
+
+```
+watch kubectl get tigerastatus
+```
+
+You should an output similar to the following:
+```
+NAME                  AVAILABLE   PROGRESSING   DEGRADED   SINCE
+apiserver             True        False         False      3m50s
+calico                True        False         False      35s
+compliance            True        False         False      65s
+intrusion-detection   True        False         False      85s
+log-collector         True        False         False      55s
+log-storage           True        False         False      2m5s
+manager               True        False         False      50s
+monitor               True        False         False      4m50s
+```
+
+### 1.1.5. Secure calico system components
+
+As part of the installtion process, we will implement Network security Policies to protect calico components but allow the communication between them, so we can follow a zero trust security approach. Implement the following calico network policies to the environment:
+
+```
+kubectl create -f https://docs.tigera.io/manifests/tigera-policies.yaml
+```
+
+### 1.1.6. Install the calicoctl utility
+
+Perform the commands below to install the calicoctl client:
+
+```
+curl -o calicoctl -O -L https://downloads.tigera.io/ee/binaries/v3.12.0/calicoctl
+```
+```
+chmod +x calicoctl
+```
+```
+sudo mv calicoctl /usr/local/bin/
+```
+
+Finally, check the installed Calico version in your lab:
+
+```
+calicoctl version
+```
+
+Please confirm the "Cluster Calico Enterprise Version" matches the calicoctl version in "Client Version", otherwise please raise this to your instructor.
+
+Configure autocomplete for kubectl.
+
+```
+sudo apt-get install bash-completion
+source /usr/share/bash-completion/bash_completion
+echo 'source <(kubectl completion bash)' >>~/.bashrc
+source ~/.bashrc
 ```
