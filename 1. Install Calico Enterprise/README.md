@@ -106,7 +106,7 @@ kubectl create secret generic tigera-pull-secret \
     --type=kubernetes.io/dockerconfigjson -n tigera-operator
 ```
 
-11. We also need to create the pull secret in the tigera-prometheus namespace and patch the prometheus operator deployment.
+11. We also need to create the pull secret in the tigera-prometheus namespace and patch the prometheus operator deployment to pull the images. For all the other Calico Enterprise components such as calico-node, typha, and others to pull the images, tigera-operator copies "tigera-pull-secret" secret to the relevant namespaces.
 
 ```
 kubectl create secret generic tigera-pull-secret \
@@ -118,22 +118,69 @@ kubectl patch deployment -n tigera-prometheus calico-prometheus-operator \
     -p '{"spec":{"template":{"spec":{"imagePullSecrets":[{"name": "tigera-pull-secret"}]}}}}'
 ```
 
-
-We will apply now the Custom Resource Definitions:
+12. Get yourself familiar with the resources in the following manifest and then install the Tigera custom resources. As discussed in the training, the Installation resource deploy the required resources in the calico-system namespace, which enables the CNI functionality in the cluster. 
 
 ```
-kubectl apply -f training-lab-workbooks/advanced/1-initial-setup/lab_manifests/custom-resources.yaml
+kubectl create -f https://docs.tigera.io/manifests/custom-resources.yaml
 ```
 
-And check the components start progressing:
+13. Watch the status of various components progressing. We need to wait for at least one of the tigera-apiserver pods in the tigera-system namespace to be running before applying the tigera licensekey. The reasons is that the LicenseKey resource uses "projectcalico.org/v3" api, which is managed by the tigera apiserver.
+
+```
+watch kubectl get pods -A
+```
+```
+Every 2.0s: kubectl get pods -A                                                                                                                                                                                                                                                                                                         bastion: Wed Dec 28 23:50:12 2022
+
+NAMESPACE              NAME                                                              READY   STATUS    RESTARTS   AGE
+calico-system          calico-kube-controllers-7b4fd8c4dc-smcrl                          1/1     Running   0          2m14s
+calico-system          calico-node-fh6mk                                                 1/1     Running   0          2m9s
+calico-system          calico-node-slj56                                                 1/1     Running   0          2m2s
+calico-system          calico-node-t26dd                                                 1/1     Running   0          2m7s
+calico-system          calico-typha-6b4d56986f-48f4s                                     1/1     Running   0          2m9s
+calico-system          calico-typha-6b4d56986f-ndtv2                                     1/1     Running   0          2m15s
+calico-system          csi-node-driver-5gh77                                             2/2     Running   0          104s
+calico-system          csi-node-driver-98jfd                                             2/2     Running   0          100s
+calico-system          csi-node-driver-wpzsh                                             2/2     Running   0          100s
+kube-system            coredns-64897985d-89vz2                                           1/1     Running   0          165m
+kube-system            coredns-64897985d-cctns                                           1/1     Running   0          165m
+kube-system            etcd-ip-10-0-1-20.us-west-1.compute.internal                      1/1     Running   0          166m
+kube-system            kube-apiserver-ip-10-0-1-20.us-west-1.compute.internal            1/1     Running   0          166m
+kube-system            kube-controller-manager-ip-10-0-1-20.us-west-1.compute.internal   1/1     Running   0          166m
+kube-system            kube-proxy-5ktgw                                                  1/1     Running   0          165m
+kube-system            kube-proxy-6pldx                                                  1/1     Running   0          165m
+kube-system            kube-proxy-djrv5                                                  1/1     Running   0          165m
+kube-system            kube-scheduler-ip-10-0-1-20.us-west-1.compute.internal            1/1     Running   0          166m
+tigera-operator        tigera-operator-74575475cc-95b2b                                  1/1     Running   0          9m18s
+tigera-packetcapture   tigera-packetcapture-89666fc9d-t6bf2                              1/1     Running   0          83s
+tigera-prometheus      alertmanager-calico-node-alertmanager-0                           2/2     Running   0          37s
+tigera-prometheus      alertmanager-calico-node-alertmanager-1                           2/2     Running   0          37s
+tigera-prometheus      alertmanager-calico-node-alertmanager-2                           2/2     Running   0          36s
+tigera-prometheus      calico-prometheus-operator-5798884f64-qflkx                       1/1     Running   0          8m45s
+tigera-prometheus      prometheus-calico-node-prometheus-0                               2/3     Running   0          36s
+tigera-system          tigera-apiserver-69b9886985-cg6lv                                 2/2     Running   0          83s
+tigera-system          tigera-apiserver-69b9886985-sg9ht                                 2/2     Running   0          83s
+```
+Alternatively, you could the following command to watch the status of various Calico Enteprise component progress.
 
 ```
 watch kubectl get tigerastatus
 ```
+```
+Every 2.0s: kubectl get tigerastatus                                                                                                                                                                                                                                                                                                    bastion: Wed Dec 28 23:57:31 2022
 
-### 1.1.4. Apply the license
+NAME                  AVAILABLE   PROGRESSING   DEGRADED   SINCE
+apiserver             True        False         False      7m48s
+calico                True        False         False      8m43s
+compliance                                      True
+intrusion-detection                             True
+log-collector                                   True
+log-storage                                     True
+manager                                         True
+monitor               True        False         False      7m53s
+```
 
-Wait util the `apiserver` shows an status of `True` under the `Available` column, then press `Ctrl+C` to return to the prompt, and apply the license file:
+14. Apply the LicenseKey to unblock enterprise features of Calico Enterprise.
 
 ```
 kubectl create -f /home/tigera/license.yaml
