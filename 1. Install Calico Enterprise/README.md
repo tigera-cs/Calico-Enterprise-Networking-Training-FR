@@ -54,24 +54,50 @@ tigera-elasticsearch   kubernetes.io/aws-ebs   Retain          WaitForFirstConsu
 
 ```
 kubectl create -f https://docs.tigera.io/manifests/tigera-operator.yaml
+```
+6. Validate that the tigera-operator is running in the cluster. Note that the tigera-operator is running even though there is no CNI plugin deployed in the cluster. This is because tigera-operator is host networked meaning that it uses the host IP address to communicate over the network.
 
 ```
+kubectl get pods -n tigera-operator
+```
 
-5. Calico Enterprise Manager UI uses Prometheus to provide out-of-the-box metrics in the various sections of CE Manager UI such as the dashboard page, security policies, and others. Calico Enterprise uses Prometheus operator to deploy Prometheus server and Alertmanager. Apply the following manifest to deploy the Prometheus operator.
+```
+NAME                               READY   STATUS    RESTARTS   AGE   IP          NODE                                      NOMINATED NODE   READINESS GATES
+tigera-operator-6cb8864f87-w9bb5   1/1     Running   0          17m   10.0.1.31   ip-10-0-1-31.us-west-1.compute.internal   <none>           <none>
+```
+
+7. Calico Enterprise Manager UI uses Prometheus to provide out-of-the-box metrics in the various sections of CE Manager UI such as the dashboard page, security policies, and others. Calico Enterprise uses Prometheus operator to deploy Prometheus server and Alertmanager. Apply the following manifest to deploy the Prometheus operator.
 
   **Note:** Prometheus operator that ships with Calico Enterprise is an optional component and can be replaced with the customer's Prometheus operator if needed.   However, a Prometheus operator must be deployed in the cluster and watch the "tigera-prometheus" namespace to deploy the required Prometheus and Alertmanager   resources. Customer's instance of Prometheus operator can be deployed in any namesapce.
 
 
 ```
 kubectl create -f https://docs.tigera.io/manifests/tigera-prometheus-operator.yaml
-
 ```
 
-Check tigera-operator has been successfully rolled out:
+8. Check the tigera-prometheus pod status. 
 
 ```
-kubectl rollout status -n tigera-operator deployment tigera-operator
+kubectl get pods -n tigera-prometheus
 ```
+```
+NAME                                          READY   STATUS    RESTARTS   AGE
+calico-prometheus-operator-6557c5bc57-6dbqk   0/1     Pending   0          81s
+```
+
+9. tigera-prometheus operator should be in Pending STATUS. Let's run the following command and check the Events section of the pod.
+
+```
+kubectl describe pods -n tigera-prometheus
+```
+
+```
+Events:
+  Type     Reason            Age                  From               Message
+  ----     ------            ----                 ----               -------
+  Warning  FailedScheduling  43s (x4 over 3m47s)  default-scheduler  0/3 nodes are available: 1 node(s) had taint {node-role.kubernetes.io/master: }, that the pod didn't tolerate, 2 node(s) had taint {node.kubernetes.io/not-ready: }, that the pod didn't tolerate.
+```
+
 
 Now, we must specify the pull secret we will use to download the required images from tigera:
 
