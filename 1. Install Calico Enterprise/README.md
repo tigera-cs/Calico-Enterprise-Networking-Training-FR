@@ -5,6 +5,7 @@ This lab provides the instructions to:
 * [Install Calico Enterprise](https://github.com/Pooriya-a/CalicoEnterprise-Networking-Training/blob/main/1.%20Install%20Calico%20Enterprise/README.md#install-calico-enterprise)
 * [Install Calico Enterprise command line utility "calicoctl"](https://github.com/Pooriya-a/CalicoEnterprise-Networking-Training/blob/main/1.%20Install%20Calico%20Enterprise/README.md#install-calico-enterprise-command-line-utility-calicoctl)
 * [Deploy a three-tier sample application called "yaobank" (Yet Another Online Bank)](https://github.com/Pooriya-a/CalicoEnterprise-Networking-Training/blob/main/1.%20Install%20Calico%20Enterprise/README.md#deploy-a-three-tier-sample-application-called-yaobank-yet-another-online-bank)
+* Access CE Manager UI and yaobank web UI using ingress
 
 
 
@@ -549,4 +550,116 @@ curl 10.0.1.20:30180
 ```
 
 
+### Access CE Manager UI and yaobank web UI using ingress
 
+The manifest file below will create the appropriate ingresses for the manager and kibana access:
+
+```
+kubectl apply -f -<<EOF
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  annotations:
+    kubernetes.io/ingress.class: "nginx"
+  name: yaobank
+  namespace: yaobank
+spec:
+  rules:
+  - host: "yaobank.template.lynx.tigera.ca"
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: customer
+            port:
+              number: 80
+
+---
+
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: manager
+  namespace: tigera-manager
+  annotations:
+    nginx.ingress.kubernetes.io/backend-protocol: HTTPS
+    kubernetes.io/ingress.class: "nginx"
+spec:
+  rules:
+  - host: "manager.template.lynx.tigera.ca"
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: tigera-manager
+            port:
+              number: 9443
+EOF
+```
+
+The ingress is created with a generic hostname, but we must match the name used when the lab was deployed, so we will patch it with the command below (substitute the keywork LABNAME with the name of your lab):
+
+```
+kubectl patch ingress yaobank -n yaobank --type='json' -p='[{"op": "replace", "path":"/spec/rules/0/host", "value":"yaobank.<LABNAME>.lynx.tigera.ca"}]'
+```
+```
+kubectl patch ingress manager -n tigera-manager --type='json' -p='[{"op": "replace", "path":"/spec/rules/0/host", "value":"manager.<LABNAME>.lynx.tigera.ca"}]'
+```
+
+Check you can access the yaobank application, the manager UI, and Kibana using the following URLs:
+
+```
+https://yaobank.<LABNAME>.lynx.tigera.ca
+```
+```
+https://manager.<LABNAME>.lynx.tigera.ca
+```
+
+## 1.4. Create a service account, and bind it to the admin role
+
+Now we must create a service account in the default namespace to log into the system:
+
+```
+kubectl create sa tigercub
+```
+
+Then bind that service account to the admin role (tigera-network-admin):
+
+```
+kubectl create clusterrolebinding tigercub-bind --clusterrole tigera-network-admin --serviceaccount default:tigercub
+```
+
+## 1.5. Retrieve credentials and confirm you can access your environment
+
+### 1.5.1. Get the token to access Calico Manager UI
+
+Retrieve the token for the service account we created in the previous step:
+
+```
+kubectl get secret $(kubectl get serviceaccount tigercub -o jsonpath='{range .secrets[*]}{.name}{"\n"}{end}' | grep token) -o go-template='{{.data.token | base64decode}}' && echo
+```
+
+Copy the output to a place where you can easily retrieve it later, as we will use that token in order to access Calico Enterprise UI during the duration of the training. Now try to access the UI in the URL you tested before with your token:
+
+```
+https://manager.<LABNAME>.lynx.tigera.ca
+```
+
+### 1.5.2. Retrieve the password to access Kibana
+
+To access Kibana, you must use the default `elastic` username. In order to retrieve the password, execute the following command:
+
+```
+kubectl -n tigera-elasticsearch get secret tigera-secure-es-elastic-user -o go-template='{{.data.elastic | base64decode}}' && echo
+```
+
+Similarly to what you did on the previous step, record the passsword so you can retrieve it later for subsequent labs
+
+Now try to access Kibana from the left toolbar in Calico Enterprise as indicated on the figure below. This will open a new tab where you must introduce the username (`elastic`) and password retrieved before:
+
+
+![kibana](img/1-kibana.png)
