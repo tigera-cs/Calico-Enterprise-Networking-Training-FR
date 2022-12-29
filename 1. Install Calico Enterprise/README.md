@@ -103,7 +103,7 @@ kubectl get pods -n tigera-prometheus
 ```
 ```
 NAME                                          READY   STATUS    RESTARTS   AGE
-calico-prometheus-operator-6557c5bc57-6dbqk   0/1     Pending   0          81s
+calico-prometheus-operator-6557c5bc57-6l2l8   0/1     Pending   0          7s
 ```
 
 9. tigera-prometheus operator should be in the Pending STATUS. Let's run the following command and check the **Events:** section of the pod. As indicated in the Warning message, the pod is not running because two nodes have the taint "node.kubernetes.io/not-ready". The reason for this taint is because the CNI plugin is not running in this cluster yet.
@@ -114,9 +114,9 @@ kubectl describe pods -n tigera-prometheus
 
 ```
 Events:
-  Type     Reason            Age                  From               Message
-  ----     ------            ----                 ----               -------
-  Warning  FailedScheduling  43s (x4 over 3m47s)  default-scheduler  0/3 nodes are available: 1 node(s) had taint {node-role.kubernetes.io/master: }, that the pod didn't tolerate, 2 node(s) had taint {node.kubernetes.io/not-ready: }, that the pod didn't tolerate.
+  Type     Reason            Age   From               Message
+  ----     ------            ----  ----               -------
+  Warning  FailedScheduling  42s   default-scheduler  0/3 nodes are available: 1 node(s) had taint {node-role.kubernetes.io/master: }, that the pod didn't tolerate, 2 node(s) had taint {node.kubernetes.io/not-ready: }, that the pod didn't tolerate.
 ```
 
 10. This lab directly downloads the images from quay.io/tigera, which requires authentication. Run the following command to create the secret necessary to pull the images.
