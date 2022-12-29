@@ -79,12 +79,12 @@ kubectl create -f https://docs.tigera.io/manifests/tigera-operator.yaml
 6. Validate that the tigera-operator is running in the cluster. Note that the tigera-operator is running even though there is no CNI plugin deployed in the cluster. This is because tigera-operator is host networked meaning that it uses the host IP address to communicate over the network.
 
 ```
-kubectl get pods -n tigera-operator
+kubectl get pods -n tigera-operator -o wide
 ```
 
 ```
 NAME                               READY   STATUS    RESTARTS   AGE   IP          NODE                                      NOMINATED NODE   READINESS GATES
-tigera-operator-6cb8864f87-w9bb5   1/1     Running   0          17m   10.0.1.31   ip-10-0-1-31.us-west-1.compute.internal   <none>           <none>
+tigera-operator-6cb8864f87-tk2zl   1/1     Running   0          55s   10.0.1.30   ip-10-0-1-30.us-west-1.compute.internal   <none>           <none>
 ```
 
 7. Calico Enterprise Manager UI uses Prometheus to provide out-of-the-box metrics in the various sections of CE Manager UI such as the dashboard page, security policies, and others. Calico Enterprise uses Prometheus operator to deploy Prometheus server and Alertmanager. Apply the following manifest to deploy the Prometheus operator.
