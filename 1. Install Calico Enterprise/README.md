@@ -312,3 +312,243 @@ Cluster Type:                         typha,kdd,k8s,operator,bgp,kubeadm
 ```
 
 ### Deploy a three-tier sample application called "yaobank" (Yet Another Online Bank)
+
+For this lab, we will use a sample application called "Yet Another Online Bank" (yaobank) which consists of 3 microservices.
+1. Customer (which provides a simple web GUI)
+2. Summary (some middleware business logic)
+3. Database (the persistent datastore for the bank)
+
+
+The following diagram shows the logical diagram of the application.
+
+![yaobank](img/1-yaobank.jpg)
+
+Install the application using the following commands
+
+```
+kubectl apply -f -<<EOF
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: yaobank
+  labels:
+    istio-injection: disabled
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: database
+  namespace: yaobank
+  labels:
+    app: database
+spec:
+  ports:
+  - port: 2379
+    name: http
+  selector:
+    app: database
+
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: database
+  namespace: yaobank
+  labels:
+    app: yaobank
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: database
+  namespace: yaobank
+spec:
+  selector:
+    matchLabels:
+      app: database
+      version: v1
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: database
+        version: v1
+    spec:
+      serviceAccountName: database
+      containers:
+      - name: database
+        image: calico/yaobank-database:certification
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 2379
+        command: ["etcd"]
+        args:
+          - "-advertise-client-urls"
+          - "http://database:2379"
+          - "-listen-client-urls"
+          - "http://0.0.0.0:2379"
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: summary
+  namespace: yaobank
+  labels:
+    app: summary
+spec:
+  ports:
+  - port: 80
+    name: http
+  selector:
+    app: summary
+    
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: summary
+  namespace: yaobank
+  labels:
+    app: yaobank
+    database: reader
+    
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: summary
+  namespace: yaobank
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: summary
+      version: v1
+  template:
+    metadata:
+      labels:
+        app: summary
+        version: v1
+    spec:
+      serviceAccountName: summary
+      containers:
+      - name: summary
+        image: calico/yaobank-summary:certification
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 80
+ 
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: customer
+  namespace: yaobank
+  labels:
+    app: customer
+spec:
+  type: NodePort
+  ports:
+  - port: 80
+    nodePort: 30180
+    name: http
+  selector:
+    app: customer
+    
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: customer
+  namespace: yaobank
+  labels:
+    app: yaobank
+    summary: reader
+    
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: customer
+  namespace: yaobank
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: customer
+      version: v1
+  template:
+    metadata:
+      labels:
+        app: customer
+        version: v1
+    spec:
+      serviceAccountName: customer
+      containers:
+      - name: customer
+        image: calico/yaobank-customer:certification
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 80
+---
+EOF
+
+```
+
+Check the status of the pods. Make sure all the pods are in Running status.
+
+```
+watch kubectl get pods -n yaobank -o wide
+```
+```
+Every 2.0s: kubectl get pods -n yaobank -o wide                                                                                                                                                                                                                                                                                         bastion: Sat Jul  9 03:39:17 2022
+
+NAME                        READY   STATUS    RESTARTS   AGE   IP            NODE                                         NOMINATED NODE   READINESS GATES
+customer-7955b7b69d-b89bp   1/1     Running   0          16m   10.48.0.195   ip-10-0-1-31.ca-central-1.compute.internal   <none>           <none>
+database-67f77d7f54-sn9tk   1/1     Running   0          16m   10.48.0.67    ip-10-0-1-30.ca-central-1.compute.internal   <none>           <none>
+summary-748b977d44-7dn2g    1/1     Running   0          16m   10.48.0.68    ip-10-0-1-30.ca-central-1.compute.internal   <none>           <none>
+summary-748b977d44-7vzts    1/1     Running   0          16m   10.48.0.194   ip-10-0-1-31.ca-central-1.compute.internal   <none>           <none>
+```
+
+
+## Test Yaobank application connectivity
+
+For now, the application we deployed is only accesible from outside the cluster through a NodePort. We can try the following port on any of the cluster nodes to access the customer pod, which is the frontend app. Following is trying the NodePort on the master node.
+
+```
+curl 10.0.1.20:30180
+```
+```
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <title>YAO Bank</title>
+    <style>
+    h2 {
+      font-family: Arial, Helvetica, sans-serif;
+    }
+    h1 {
+      font-family: Arial, Helvetica, sans-serif;
+    }
+    p {
+      font-family: Arial, Helvetica, sans-serif;
+    }
+    </style>
+  </head>
+  <body>
+        <h1>Welcome to YAO Bank</h1>
+        <h2>Name: Spike Curtis</h2>
+        <h2>Balance: 2389.45</h2>
+        <p><a href="/logout">Log Out >></a></p>
+  </body>
+</html>
+```
+
+In later labs, we will be deploying an ingress controller, which is the recommended way to direct traffic to web applications.
+
