@@ -284,15 +284,7 @@ manager               True        False         False      11s
 monitor               True        False         False      53m
 ```
 
-### 1.1.5. Secure calico system components
-
-As part of the installtion process, we will implement Network security Policies to protect calico components but allow the communication between them, so we can follow a zero trust security approach. Implement the following calico network policies to the environment:
-
-```
-kubectl create -f https://docs.tigera.io/manifests/tigera-policies.yaml
-```
-
-### 1.1.6. Install the calicoctl utility
+### Install Calico Enterprise command line utility "calicoctl"
 
 Perform the commands below to install the calicoctl client:
 
