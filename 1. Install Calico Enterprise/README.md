@@ -552,7 +552,8 @@ curl 10.0.1.20:30180
 
 ### Access CE Manager UI and yaobank web UI using ingress
 
-The manifest file below will create the appropriate ingresses for the manager and kibana access:
+In this section of the lab, we will configure the necessary resources to access the Calico Enterprise Manager UI and yaobank web UI.
+1. nginx ingress controller is already onfigured in the lab for you. Let's expose Calico Enterprise Manager UI and yaobank customer service by creating the following Ingress resource. Before applying the following manifest, make sure to update the **host** name by replacing **<LABNAME>** with the name of your lab instance in both of the following Ingress resources.
 
 ```
 kubectl apply -f -<<EOF
@@ -565,7 +566,7 @@ metadata:
   namespace: yaobank
 spec:
   rules:
-  - host: "yaobank.template.lynx.tigera.ca"
+  - host: "yaobank.<LABNAME>.lynx.tigera.ca"
     http:
       paths:
       - path: /
@@ -575,9 +576,7 @@ spec:
             name: customer
             port:
               number: 80
-
 ---
-
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
@@ -588,7 +587,7 @@ metadata:
     kubernetes.io/ingress.class: "nginx"
 spec:
   rules:
-  - host: "manager.template.lynx.tigera.ca"
+  - host: "manager.<LABNAME>.lynx.tigera.ca"
     http:
       paths:
       - path: /
@@ -599,15 +598,7 @@ spec:
             port:
               number: 9443
 EOF
-```
 
-The ingress is created with a generic hostname, but we must match the name used when the lab was deployed, so we will patch it with the command below (substitute the keywork LABNAME with the name of your lab):
-
-```
-kubectl patch ingress yaobank -n yaobank --type='json' -p='[{"op": "replace", "path":"/spec/rules/0/host", "value":"yaobank.<LABNAME>.lynx.tigera.ca"}]'
-```
-```
-kubectl patch ingress manager -n tigera-manager --type='json' -p='[{"op": "replace", "path":"/spec/rules/0/host", "value":"manager.<LABNAME>.lynx.tigera.ca"}]'
 ```
 
 Check you can access the yaobank application, the manager UI, and Kibana using the following URLs:
