@@ -139,9 +139,7 @@ kubectl patch deployment -n tigera-prometheus calico-prometheus-operator \
     -p '{"spec":{"template":{"spec":{"imagePullSecrets":[{"name": "tigera-pull-secret"}]}}}}'
 ```
 
-Calico operator uses custom resouces to deploy the required resources for Calico.
-
-For example, Calico operator creates all the the pods in the calico-system namesapce and a number of other resources when it sees the Installation resource in the cluster.
+12. tigera-operator uses custom resouces to deploy the required resources for Calico Enterprise. For example, tigera-operator creates all the the pods in the calico-system namesapce and a number of other resources when it sees the Installation resource in the cluster.
 
 Run the following command to see if there is any resources in the calico-system namesapce. You should see none.
 
@@ -166,7 +164,7 @@ $ kubectl cluster-info dump | grep -m 2 -E "service-cluster-ip-range|cluster-cid
                             "--cluster-cidr=10.48.0.0/16"
 ```
 
-Now we can apply the following manifest, which will create the the Installation custom resource.
+Now apply the following manifest, which will create the the Installation custom resource.
 
 ```
 kubectl apply -f -<<EOF
@@ -177,7 +175,12 @@ kind: Installation
 metadata:
   name: default
 spec:
-  # Configures Calico networking.
+  # Install Calico Enterprise
+  variant: TigeraSecureEnterprise
+  # List of image pull secrets to use when installing images from a container registry.
+  # If specified, secrets must be created in the `tigera-operator` namespace.
+  imagePullSecrets:
+    - name: tigera-pull-secret
   calicoNetwork:
     # Note: The ipPools section cannot be modified post-install.
     ipPools:
@@ -187,6 +190,7 @@ spec:
       natOutgoing: Enabled
       nodeSelector: all()
 EOF
+
 ```
 
 
