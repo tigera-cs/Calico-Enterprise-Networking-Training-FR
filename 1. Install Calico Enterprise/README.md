@@ -139,6 +139,57 @@ kubectl patch deployment -n tigera-prometheus calico-prometheus-operator \
     -p '{"spec":{"template":{"spec":{"imagePullSecrets":[{"name": "tigera-pull-secret"}]}}}}'
 ```
 
+Calico operator uses custom resouces to deploy the required resources for Calico.
+
+For example, Calico operator creates all the the pods in the calico-system namesapce and a number of other resources when it sees the Installation resource in the cluster.
+
+Run the following command to see if there is any resources in the calico-system namesapce. You should see none.
+
+```
+kubectl get all -n calico-system
+```
+
+Installation resouce is also responsible for certain install time configuration parameters such as IPPOOL configuration, MTU, and etc. For complete info on the Installation resource configurations, please visit the following link.
+
+https://docs.tigera.io/reference/installation/api#operator.tigera.io/v1.Installation
+
+We have customized the installation resource for this lab. We have defined an IPPOOL with the CIDR 10.48.0.0/24. This must be within the range of the pod network CIDR when Kubernetes is bootstrapped. Here we are defining a smaller subnet within the available range as we will be creating additional pools for other purposes in future labs.
+
+Run the following command to find the cluster-cidr (pod-network-cidr) that was used to bootstrap the cluster. You should have a similar output provided below.
+
+```
+kubectl cluster-info dump | grep -m 2 -E "service-cluster-ip-range|cluster-cidr"
+```
+```
+$ kubectl cluster-info dump | grep -m 2 -E "service-cluster-ip-range|cluster-cidr"
+                            "--service-cluster-ip-range=10.49.0.0/16",
+                            "--cluster-cidr=10.48.0.0/16"
+```
+
+Now we can apply the following manifest, which will create the the Installation custom resource.
+
+```
+kubectl apply -f -<<EOF
+# This section includes base Calico installation configuration.
+# For more information, see: https://docs.projectcalico.org/v3.21/reference/installation/api#operator.tigera.io/v1.Installation
+apiVersion: operator.tigera.io/v1
+kind: Installation
+metadata:
+  name: default
+spec:
+  # Configures Calico networking.
+  calicoNetwork:
+    # Note: The ipPools section cannot be modified post-install.
+    ipPools:
+    - blockSize: 26
+      cidr: 10.48.0.0/24
+      encapsulation: None
+      natOutgoing: Enabled
+      nodeSelector: all()
+EOF
+```
+
+
 12. Get yourself familiar with the resources in the following manifest and then install the Tigera custom resources. As discussed in the training, the Installation resource deploy the required resources in the calico-system namespace, which enables the CNI functionality in the cluster. 
 
 ```
