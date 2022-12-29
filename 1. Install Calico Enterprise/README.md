@@ -6,6 +6,16 @@ This lab provides the instructions to:
 * Deploy a three-tier sample application called "yaobank" (Yet Another Online Bank)
 
 
+Before getting started, let's enable bash autocomplete for kubectl so that we can easier interact with kubectl.
+
+```
+sudo apt-get install bash-completion
+source /usr/share/bash-completion/bash_completion
+echo 'source <(kubectl completion bash)' >>~/.bashrc
+source ~/.bashrc
+
+```
+
 ### Install Calico Enterprise
 
 Upstream Kubernetes by default does not provide a network interface plugin. In this lab environment, Kubernetes has been preinstalled, but as your network plugin is not installed yet, your nodes will appear as NotReady. This section walks you through the required steps to install Calico Enteprise as both the CNI provider and network policy engine provider.
