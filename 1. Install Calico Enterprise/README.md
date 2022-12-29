@@ -6,6 +6,7 @@ This lab provides the instructions to:
 * Deploy a three-tier sample application called "yaobank" (Yet Another Online Bank)
 
 
+
 Before getting started, let's enable bash autocomplete for kubectl so that we can easier interact with kubectl.
 
 ```
