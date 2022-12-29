@@ -313,17 +313,18 @@ Cluster Type:                         typha,kdd,k8s,operator,bgp,kubeadm
 
 ### Deploy a three-tier sample application called "yaobank" (Yet Another Online Bank)
 
-For this lab, we will use a sample application called "Yet Another Online Bank" (yaobank) which consists of 3 microservices.
-1. Customer (which provides a simple web GUI)
-2. Summary (some middleware business logic)
-3. Database (the persistent datastore for the bank)
+yaobank is a sample application, which consists of 3 microservices explained below. It will be used throughout the training for various demonstrations.
+
+1. Customer (provides a simple web GUI)
+2. Summary (provides some middleware business logic)
+3. Database (peovides the persistent datastore for the bank)
 
 
 The following diagram shows the logical diagram of the application.
 
 ![yaobank](img/1-yaobank.jpg)
 
-Install the application using the following commands
+1. Install the application by applying the following manifest in the cluster.
 
 ```
 kubectl apply -f -<<EOF
