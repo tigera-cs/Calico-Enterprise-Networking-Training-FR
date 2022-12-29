@@ -161,7 +161,7 @@ tigera-prometheus      prometheus-calico-node-prometheus-0                      
 tigera-system          tigera-apiserver-69b9886985-cg6lv                                 2/2     Running   0          83s
 tigera-system          tigera-apiserver-69b9886985-sg9ht                                 2/2     Running   0          83s
 ```
-Alternatively, you could use the following command to watch the status of various Calico Enteprise component progress.
+Alternatively, you could use the following command to watch the status of various Calico Enteprise components progress.
 
 ```
 watch kubectl get tigerastatus
