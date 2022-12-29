@@ -288,10 +288,16 @@ monitor               True        False         False      53m
 
 calicoctl is the Calico Enterprise specific command line utility that allows you to create, read, update, and delete Calico Enterprise objects from the command line. 
 1. Follow the the instruction on the link below to **Install calicoctl as a binary on a single host** for Linux operating system. 
-2. 
+
 https://docs.tigera.io/maintenance/clis/calicoctl/install#install-calicoctl-as-a-binary-on-a-single-host
 
-2.  Please make the "Cluster Calico Enterprise Version" matches the calicoctl version in "Client Version", otherwise please raise this to your instructor.
+2. Once you set the file to be exacutable, make sure you move it into your path.
+
+```
+mv calicoctl /usr/local/bin
+```
+
+3.  We also need to make sure the "Cluster Calico Enterprise Version" matches the calicoctl version in "Client Version", otherwise please raise this to your instructor.
 
 ```
 calicoctl version
