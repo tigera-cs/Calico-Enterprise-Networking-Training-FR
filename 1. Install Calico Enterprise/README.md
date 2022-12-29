@@ -164,7 +164,7 @@ $ kubectl cluster-info dump | grep -m 2 -E "service-cluster-ip-range|cluster-cid
                             "--cluster-cidr=10.48.0.0/16"
 ```
 
-Now apply the following manifest, which will create the the Installation custom resource.
+Now apply the following manifest, which will create the the Installation custom resource and enables the CNI functionality in the cluster.
 
 ```
 kubectl apply -f -<<EOF
@@ -194,13 +194,14 @@ EOF
 ```
 
 
-12. Get yourself familiar with the resources in the following manifest and then install the Tigera custom resources. As discussed in the training, the Installation resource deploy the required resources in the calico-system namespace, which enables the CNI functionality in the cluster. 
+13.  Get yourself familiar with the resources in the following manifest and then install the Tigera custom resources.
+** Note:** We have already customized and deployed the Installation custom resource, which is also available in the following manifest. However, since there is no customization in the following manifest, there is no change in the Installation resource configuration. We will just receive a message tha the resource already exist.
 
 ```
 kubectl create -f https://docs.tigera.io/manifests/custom-resources.yaml
 ```
 
-13. Watch the status of various components progressing. We need to wait for at least one of the tigera-apiserver pods in the tigera-system namespace to be running before applying the tigera licensekey. The reasons is that the LicenseKey resource uses "projectcalico.org/v3" api, which is managed by the tigera apiserver.
+14. Watch the status of various components progressing. We need to wait for at least one of the tigera-apiserver pods in the tigera-system namespace to be running before applying the tigera licensekey. The reasons is that the LicenseKey resource uses "projectcalico.org/v3" api, which is managed by the tigera apiserver.
 
 ```
 watch kubectl get pods -A
@@ -256,13 +257,13 @@ manager                                         True
 monitor               True        False         False      7m53s
 ```
 
-14. Apply the LicenseKey to unblock enterprise features of Calico Enterprise.
+15. Apply the LicenseKey to unblock enterprise features of Calico Enterprise.
 
 ```
 kubectl create -f /home/tigera/license.yaml
 ```
 
-15. Watch the status of various components progressing. Ensure that all the components are AVAILABLE and there is no components in PROGRESSING or DEGRADED before moving forward. This can take few minutes.
+16. Watch the status of various components progressing. Ensure that all the components are AVAILABLE and there is no components in PROGRESSING or DEGRADED before moving forward. This can take few minutes.
 
 ```
 watch kubectl get tigerastatus
