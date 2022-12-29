@@ -553,7 +553,8 @@ curl 10.0.1.20:30180
 ### Access CE Manager UI and yaobank web UI using ingress
 
 In this section of the lab, we will configure the necessary resources to access the Calico Enterprise Manager UI and yaobank web UI.
-1. nginx ingress controller is already onfigured in the lab for you. Let's expose Calico Enterprise Manager UI and yaobank customer service by creating the following Ingress resource. Before applying the following manifest, make sure to update the **host** name by replacing **""LABNAME""** with the name of your lab instance in both of the following Ingress resources.
+
+1. nginx ingress controller is already onfigured in the lab for you. Let's expose Calico Enterprise Manager UI and yaobank customer service by creating the following Ingress resource. Before applying the following manifest, make sure to update the **host** name by replacing **"LABNAME"** with the name of your lab instance in both of the following Ingress resources.
 
 ```
 kubectl apply -f -<<EOF
@@ -601,44 +602,46 @@ EOF
 
 ```
 
-Check you can access the yaobank application, the manager UI, and Kibana using the following URLs:
+2. Check your access to the yaobank application and CE Manager UI using the following URLs.
 
 ```
-https://yaobank.<LABNAME>.lynx.tigera.ca
+https://yaobank."LABNAME".lynx.tigera.ca
 ```
 ```
-https://manager.<LABNAME>.lynx.tigera.ca
+https://manager."LABNAME".lynx.tigera.ca
 ```
 
-## 1.4. Create a service account, and bind it to the admin role
-
-Now we must create a service account in the default namespace to log into the system:
+3. Calico Enterprise Manager UI by default supports token-based auth. Let's create a serviceaccount so that we can use the associated token to log into the Manager UI. 
 
 ```
 kubectl create sa tigercub
 ```
 
-Then bind that service account to the admin role (tigera-network-admin):
+4. We already created the serviceaccount, but the serviceaccount does not yet have the required permissions to log into the Manager UI. When CE is deployed, it creates a clusterrole called **tigera-network-admin**, which has full permissions to CE resource including the Manager UI. Let's bind our serviceaccount **tigercub** to the clusterrole **tigera-network-admin** using a clusterrolebinding.
 
 ```
 kubectl create clusterrolebinding tigercub-bind --clusterrole tigera-network-admin --serviceaccount default:tigercub
 ```
-
-## 1.5. Retrieve credentials and confirm you can access your environment
-
-### 1.5.1. Get the token to access Calico Manager UI
-
-Retrieve the token for the service account we created in the previous step:
+5. Run the following command to retrieve the token for the serviceaccount we created just created.
 
 ```
 kubectl get secret $(kubectl get serviceaccount tigercub -o jsonpath='{range .secrets[*]}{.name}{"\n"}{end}' | grep token) -o go-template='{{.data.token | base64decode}}' && echo
 ```
 
-Copy the output to a place where you can easily retrieve it later, as we will use that token in order to access Calico Enterprise UI during the duration of the training. Now try to access the UI in the URL you tested before with your token:
+6. Copy the token where you can easily retrieve it later as we will use the token to access Calico Enterprise UI throughout the training. 
+7. Access the Manager UI by browsing to the following URL and paste your token in token field.
+
+**Note:** Do not foroget to replace **"LABNAME"** with your lab instance name.2
 
 ```
-https://manager.<LABNAME>.lynx.tigera.ca
+https://manager."LABNAME".lynx.tigera.ca
 ```
+You shouls see an output similar to the following.
+
+![ce-manager-ui](img/Calico-enteprise-manager-ui.JPG)
+
+
+
 
 ### 1.5.2. Retrieve the password to access Kibana
 
