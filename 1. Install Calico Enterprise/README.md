@@ -286,31 +286,15 @@ monitor               True        False         False      53m
 
 ### Install Calico Enterprise command line utility "calicoctl"
 
-Perform the commands below to install the calicoctl client:
+calicoctl is the Calico Enterprise-specific command line utility that allows you to create, read, update, and delete Calico Enterprise objects from the command line. 
+1. Follow the the instruction on the link below to **Install calicoctl as a binary on a single host** for Linux operating system. 
+2. 
+https://docs.tigera.io/maintenance/clis/calicoctl/install#install-calicoctl-as-a-binary-on-a-single-host
 
-```
-curl -o calicoctl -O -L https://downloads.tigera.io/ee/binaries/v3.12.0/calicoctl
-```
-```
-chmod +x calicoctl
-```
-```
-sudo mv calicoctl /usr/local/bin/
-```
-
-Finally, check the installed Calico version in your lab:
+2.  Please make the "Cluster Calico Enterprise Version" matches the calicoctl version in "Client Version", otherwise please raise this to your instructor.
 
 ```
 calicoctl version
 ```
-
-Please confirm the "Cluster Calico Enterprise Version" matches the calicoctl version in "Client Version", otherwise please raise this to your instructor.
-
-Configure autocomplete for kubectl.
-
 ```
-sudo apt-get install bash-completion
-source /usr/share/bash-completion/bash_completion
-echo 'source <(kubectl completion bash)' >>~/.bashrc
-source ~/.bashrc
 ```
