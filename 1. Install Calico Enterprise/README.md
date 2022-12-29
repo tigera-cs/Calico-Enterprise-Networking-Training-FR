@@ -641,19 +641,13 @@ You shouls see an output similar to the following.
 ![ce-manager-ui](img/3.Calico-enteprise-manager-ui.JPG)
 
 
-
-
-### 1.5.2. Retrieve the password to access Kibana
-
-To access Kibana, you must use the default `elastic` username. In order to retrieve the password, execute the following command:
+8. Calico Enterprise by default installs Kibana, which provides visualization for the data stored in ElasticSearch. To access Kibana, you will use the default `elastic` username. In order to retrieve the password, execute the following command.
 
 ```
 kubectl -n tigera-elasticsearch get secret tigera-secure-es-elastic-user -o go-template='{{.data.elastic | base64decode}}' && echo
 ```
+9. Store the passsword where you can retrieve it later for subsequent labs.
 
-Similarly to what you did on the previous step, record the passsword so you can retrieve it later for subsequent labs
+10. Open Kibana login page by clicking on the Kiaban icon on the Manager UI navigation bar on the left side of your browser page. You should a page similar to the following. Insert your username and password.
 
-Now try to access Kibana from the left toolbar in Calico Enterprise as indicated on the figure below. This will open a new tab where you must introduce the username (`elastic`) and password retrieved before:
-
-
-![kibana](img/1-kibana.png)
+![kibana](img/4.Calico-enteprise-kibana.JPG)
