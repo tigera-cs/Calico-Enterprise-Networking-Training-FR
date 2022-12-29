@@ -638,7 +638,7 @@ https://manager."LABNAME".lynx.tigera.ca
 ```
 You shouls see an output similar to the following.
 
-![ce-manager-ui](img/Calico-enteprise-manager-ui.JPG)
+![ce-manager-ui](img/3.Calico-enteprise-manager-ui.JPG)
 
 
 
