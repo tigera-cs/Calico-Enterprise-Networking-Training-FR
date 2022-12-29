@@ -264,7 +264,7 @@ monitor               True        False         False      7m53s
 kubectl create -f /home/tigera/license.yaml
 ```
 
-16. Watch the status of various components progressing. Ensure that all the components are AVAILABLE and there is no components in PROGRESSING or DEGRADED before moving forward. This can take few minutes.
+16. Watch the status of various components progressing. Ensure that all the components are AVAILABLE and there is no components in PROGRESSING or DEGRADED status before moving forward. This can take few minutes.
 
 ```
 watch kubectl get tigerastatus
