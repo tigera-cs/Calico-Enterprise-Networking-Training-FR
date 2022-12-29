@@ -29,9 +29,9 @@ kubectl get nodes
 ```
 ```
 NAME                                      STATUS     ROLES                  AGE     VERSION
-ip-10-0-1-20.us-west-1.compute.internal   NotReady   control-plane,master   2m16s   v1.23.14
-ip-10-0-1-30.us-west-1.compute.internal   NotReady   <none>                 111s    v1.23.14
-ip-10-0-1-31.us-west-1.compute.internal   NotReady   <none>                 111s    v1.23.14
+ip-10-0-1-20.eu-west-1.compute.internal   NotReady   control-plane,master   2m21s   v1.23.14
+ip-10-0-1-30.eu-west-1.compute.internal   NotReady   <none>                 117s    v1.23.14
+ip-10-0-1-31.eu-west-1.compute.internal   NotReady   <none>                 117s    v1.23.14
 ```
 
 2. Calico Enterprise uses ElasticSearch to store various logs such as flowlogs, DNS logs, and all others that it collects over the network. ElasticSearch requires persistent storage to store the data. This lab uses host path storage provisioner, which is not suitable for production enviroment and can result in scalability issues, instability, and data loss. 
@@ -85,7 +85,7 @@ kubectl get pods -n tigera-operator -o wide
 
 ```
 NAME                               READY   STATUS    RESTARTS   AGE   IP          NODE                                      NOMINATED NODE   READINESS GATES
-tigera-operator-6cb8864f87-tk2zl   1/1     Running   0          55s   10.0.1.30   ip-10-0-1-30.us-west-1.compute.internal   <none>           <none>
+tigera-operator-74575475cc-t5hkp   1/1     Running   0          10s   10.0.1.30   ip-10-0-1-30.eu-west-1.compute.internal   <none>           <none>
 ```
 
 7. Calico Enterprise Manager UI uses Prometheus to provide out-of-the-box metrics in the various sections of CE Manager UI such as the dashboard page, security policies, and others. Calico Enterprise uses Prometheus operator to deploy Prometheus server and Alertmanager. Apply the following manifest to deploy the Prometheus operator.
@@ -117,7 +117,7 @@ kubectl describe pods -n tigera-prometheus
 Events:
   Type     Reason            Age   From               Message
   ----     ------            ----  ----               -------
-  Warning  FailedScheduling  42s   default-scheduler  0/3 nodes are available: 1 node(s) had taint {node-role.kubernetes.io/master: }, that the pod didn't tolerate, 2 node(s) had taint {node.kubernetes.io/not-ready: }, that the pod didn't tolerate.
+  Warning  FailedScheduling  18s   default-scheduler  0/3 nodes are available: 1 node(s) had taint {node-role.kubernetes.io/master: }, that the pod didn't tolerate, 2 node(s) had taint {node.kubernetes.io/not-ready: }, that the pod didn't tolerate.
 ```
 
 10. This lab directly downloads the images from quay.io/tigera, which requires authentication. Run the following command to create the secret necessary to pull the images.
@@ -297,10 +297,16 @@ https://docs.tigera.io/maintenance/clis/calicoctl/install#install-calicoctl-as-a
 sudo mv calicoctl /usr/local/bin
 ```
 
-3.  We also need to make sure the "Cluster Calico Enterprise Version" matches the calicoctl version in "Client Version", otherwise please raise this to your instructor.
+3.  We also need to make sure the "Cluster Calico Enterprise Version" matches the calicoctl version in "Client Version". Otherwise please raise this to your instructor.
 
 ```
 calicoctl version
 ```
 ```
+Client Version:    v3.15.0
+Release:           Calico Enterprise
+Git commit:        ec220e492e
+Cluster Calico Version:               v3.24.5
+Cluster Calico Enterprise Version:    v3.15.0
+Cluster Type:                         typha,kdd,k8s,operator,bgp,kubeadm
 ```
