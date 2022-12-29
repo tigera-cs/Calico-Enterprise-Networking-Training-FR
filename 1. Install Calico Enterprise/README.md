@@ -500,25 +500,22 @@ EOF
 
 ```
 
-Check the status of the pods. Make sure all the pods are in Running status.
+2. Check the status of the pods. Make sure all the pods are in Running status.
 
 ```
 watch kubectl get pods -n yaobank -o wide
 ```
 ```
-Every 2.0s: kubectl get pods -n yaobank -o wide                                                                                                                                                                                                                                                                                         bastion: Sat Jul  9 03:39:17 2022
-
-NAME                        READY   STATUS    RESTARTS   AGE   IP            NODE                                         NOMINATED NODE   READINESS GATES
-customer-7955b7b69d-b89bp   1/1     Running   0          16m   10.48.0.195   ip-10-0-1-31.ca-central-1.compute.internal   <none>           <none>
-database-67f77d7f54-sn9tk   1/1     Running   0          16m   10.48.0.67    ip-10-0-1-30.ca-central-1.compute.internal   <none>           <none>
-summary-748b977d44-7dn2g    1/1     Running   0          16m   10.48.0.68    ip-10-0-1-30.ca-central-1.compute.internal   <none>           <none>
-summary-748b977d44-7vzts    1/1     Running   0          16m   10.48.0.194   ip-10-0-1-31.ca-central-1.compute.internal   <none>           <none>
+NAME                        READY   STATUS    RESTARTS   AGE   IP            NODE                                      NOMINATED NODE   READINESS GATES
+customer-687b8d8f74-lmzqz   1/1     Running   0          38s   10.48.0.20    ip-10-0-1-31.eu-west-1.compute.internal   <none>           <none>
+database-545f6d6d95-khwr2   1/1     Running   0          38s   10.48.0.19    ip-10-0-1-31.eu-west-1.compute.internal   <none>           <none>
+summary-7579bd9566-866km    1/1     Running   0          38s   10.48.0.21    ip-10-0-1-31.eu-west-1.compute.internal   <none>           <none>
+summary-7579bd9566-cj4v4    1/1     Running   0          38s   10.48.0.205   ip-10-0-1-30.eu-west-1.compute.internal   <none>           <none>
 ```
 
+3. For now, the application we deployed is only accesible from outside the cluster through a NodePort. We can try the following port on any of the cluster nodes to access the customer pod, which is the frontend app. Following is trying the NodePort on the master node.
 
-## Test Yaobank application connectivity
-
-For now, the application we deployed is only accesible from outside the cluster through a NodePort. We can try the following port on any of the cluster nodes to access the customer pod, which is the frontend app. Following is trying the NodePort on the master node.
+**Note:** You need to ssh in the control1 node first by running "ssh control1"
 
 ```
 curl 10.0.1.20:30180
