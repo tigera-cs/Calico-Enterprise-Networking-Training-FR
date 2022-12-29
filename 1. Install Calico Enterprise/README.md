@@ -22,22 +22,32 @@ ip-10-0-1-30.us-west-1.compute.internal   NotReady   <none>                 94m 
 ip-10-0-1-31.us-west-1.compute.internal   NotReady   <none>                 94m   v1.23.14
 ```
 
-2. Calico Enterprise uses ElasticSearch to store various logs such as flowlogs, DNS logs, and all others that it collects over the network. ElasticSearch requires persistent storage to store the data. This lab uses AWS EBS to provide persistent storage for ElasticSearch. Apply the following manifest to create the storage class, which enables us to dynamically provision AWS EBS storage.
+2. Calico Enterprise uses ElasticSearch to store various logs such as flowlogs, DNS logs, and all others that it collects over the network. ElasticSearch requires persistent storage to store the data. This lab uses host path storage provisioner, which is not suitable for production enviroment and can result in scalability issues, instability, and data loss. 
 
 ```
-kubectl apply -f -<<EOF
+kubectl apply -f - <<EOF
 apiVersion: storage.k8s.io/v1
 kind: StorageClass
 metadata:
   name: tigera-elasticsearch
-provisioner: kubernetes.io/aws-ebs
-parameters:
-  type: gp2
-  fsType: ext4
-reclaimPolicy: Retain
-allowVolumeExpansion: true
+provisioner: kubernetes.io/no-provisioner
 volumeBindingMode: WaitForFirstConsumer
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: tigera-elasticsearch
+spec:
+  capacity:
+    storage: 10Gi
+  accessModes:
+    - ReadWriteOnce
+  hostPath:
+    path: /var/tigera/elastic-data/1
+  persistentVolumeReclaimPolicy: Recycle
+  storageClassName: tigera-elasticsearch
 EOF
+
 ```
 
 3. Make sure the StorageClass has been created successfully.
@@ -46,8 +56,8 @@ EOF
 kubectl get storageclass
 ```
 ```
-NAME                   PROVISIONER             RECLAIMPOLICY   VOLUMEBINDINGMODE      ALLOWVOLUMEEXPANSION   AGE
-tigera-elasticsearch   kubernetes.io/aws-ebs   Retain          WaitForFirstConsumer   true                   10s
+NAME                   PROVISIONER                    RECLAIMPOLICY   VOLUMEBINDINGMODE      ALLOWVOLUMEEXPANSION   AGE
+tigera-elasticsearch   kubernetes.io/no-provisioner   Delete          WaitForFirstConsumer   false                  25s
 ```
 
 4. The Tigera Operator is a Kubernetes operator and provides a well-defined API for how you install, configure, and run Calico Enterprise. Tigera operator also automates and controls the the lifecycle of a Calico Enterprise deployment. Tigera operator manifest configures the necessary resources such as custom resource definitions, namespaces, services accounts, clusterroles, etc so that cluster is ready to deploy other calico Enterprise components. Get yourself familiar with the content of the manifest and create it in the cluster.
@@ -186,23 +196,23 @@ monitor               True        False         False      7m53s
 kubectl create -f /home/tigera/license.yaml
 ```
 
-Check all components become available before proceding further (this can take few minutes):
+15. Watch the status of various components progressing. Ensure that all the components are AVAILABLE and there is no components in PROGRESSING or DEGRADED before moving forward. This can take few minutes.
 
 ```
 watch kubectl get tigerastatus
 ```
 
-You should an output similar to the following:
+You should an output similar to the following.
 ```
 NAME                  AVAILABLE   PROGRESSING   DEGRADED   SINCE
-apiserver             True        False         False      3m50s
-calico                True        False         False      35s
-compliance            True        False         False      65s
-intrusion-detection   True        False         False      85s
-log-collector         True        False         False      55s
-log-storage           True        False         False      2m5s
-manager               True        False         False      50s
-monitor               True        False         False      4m50s
+apiserver             True        False         False      53m
+calico                True        False         False      54m
+compliance            True        False         False      46s
+intrusion-detection   True        False         False      56s
+log-collector         True        False         False      86s
+log-storage           True        False         False      51s
+manager               True        False         False      11s
+monitor               True        False         False      53m
 ```
 
 ### 1.1.5. Secure calico system components
