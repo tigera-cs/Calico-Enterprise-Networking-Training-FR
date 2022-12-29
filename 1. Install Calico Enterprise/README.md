@@ -27,10 +27,10 @@ Upstream Kubernetes by default does not provide a network interface plugin. In t
 kubectl get nodes
 ```
 ```
-NAME                                      STATUS     ROLES                  AGE   VERSION
-ip-10-0-1-20.us-west-1.compute.internal   NotReady   control-plane,master   95m   v1.23.14
-ip-10-0-1-30.us-west-1.compute.internal   NotReady   <none>                 94m   v1.23.14
-ip-10-0-1-31.us-west-1.compute.internal   NotReady   <none>                 94m   v1.23.14
+NAME                                      STATUS     ROLES                  AGE     VERSION
+ip-10-0-1-20.us-west-1.compute.internal   NotReady   control-plane,master   2m16s   v1.23.14
+ip-10-0-1-30.us-west-1.compute.internal   NotReady   <none>                 111s    v1.23.14
+ip-10-0-1-31.us-west-1.compute.internal   NotReady   <none>                 111s    v1.23.14
 ```
 
 2. Calico Enterprise uses ElasticSearch to store various logs such as flowlogs, DNS logs, and all others that it collects over the network. ElasticSearch requires persistent storage to store the data. This lab uses host path storage provisioner, which is not suitable for production enviroment and can result in scalability issues, instability, and data loss. 
