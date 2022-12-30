@@ -5,6 +5,7 @@ This lab provides the instructions to:
 
 * [Examine pod network connectivity across cluster nodes using CE VXLAN mode](https://github.com/Pooriya-a/CalicoEnterprise-Networking-Training/blob/main/3.%20Cross%20Node%20Connectivity/README.md#examine-pod-network-connectivity-across-cluster-nodes-using-ce-vxlan-mode)
 * [Configure an externally routable IPPool](https://github.com/Pooriya-a/CalicoEnterprise-Networking-Training/blob/main/3.%20Cross%20Node%20Connectivity/README.md#configure-an-externally-routable-ippool)
+* [Configure Calico Enterprise BGP Peering to connect with an upsteam router outside the cluster](https://github.com/Pooriya-a/CalicoEnterprise-Networking-Training/blob/main/3.%20Cross%20Node%20Connectivity/README.md#configure-calico-enterprise-bgp-peering-to-connect-with-an-upsteam-router-outside-the-cluster)
 
 ## Overview
 
