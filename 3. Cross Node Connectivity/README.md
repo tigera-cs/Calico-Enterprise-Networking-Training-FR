@@ -471,10 +471,9 @@ exit
 
 ### Configure a namespace to use an externally routable IP addresses
 
-Calico supports annotations on both namespaces and pods that can be used to control which IPPool (or even which IP address) a pod will receive its address from when it is created. In this example, we're going to create a namespace to host externally routable Pods.
+Calico supports annotations on both namespaces and pods that can be used to control which IPPool or even which IP address a pod will receive its address from when it is created. In this example, we're going to create a namespace to host externally routable Pods.
 
-
-Let's create a namespace with the required Calico IPAM annotations. Examine the namespace configurations. Note how Calico IPAM annotation `cni.projectcalico.org/ipv4pools` is used with the name of IPPool `external-pool` to allocate IP addresses from IPPool `external-pool` to pods deployed in this namespace.
+1. Let's create a namespace with the required Calico IPAM annotations. Examine the namespace configurations. Note how Calico IPAM annotation `cni.projectcalico.org/ipv4pools` is used with the name of IPPool `external-pool` to allocate IP addresses from IPPool `external-pool` to pods deployed in this namespace.
 
 ```
 kubectl apply -f -<<EOF
@@ -494,7 +493,7 @@ You should receive an output similar to the following.
 namespace/external-ns created
 ```
 
-Before deploying nginx to test the routing for pods deployed in `external-pool` IPPool from outside the cluster, let's examine the routing table of `bastion` node. You should receive an output similar to the following. At this point, `bastion` node should have no routing info for `external-pool` IPPool as there has not been any pods receiving their IP addresses from that IPPool.
+2. Before deploying nginx to test the routing for pods deployed in `external-pool` IPPool from outside the cluster, let's examine the routing table of `bastion` node. You should receive an output similar to the following. At this point, `bastion` node should have no routing info for `external-pool` IPPool as there has not been any pods receiving their IP addresses from that IPPool.
 
 ```
 ip route
@@ -503,11 +502,11 @@ ip route
 ```
 default via 10.0.1.1 dev ens5 proto dhcp src 10.0.1.10 metric 100 
 10.0.1.0/24 dev ens5 proto kernel scope link src 10.0.1.10 
-10.0.1.1 dev ens5 proto dhcp scope link src 10.0.1.10 metric 100 
+10.0.1.1 dev ens5 proto dhcp scope link src 10.0.1.10 metric 100
 ```
 
 
-Now, deploy a nginx example pod in the `external-ns` namespace along with a simple network policy that allows ingress on port 80.
+3. Deploy a nginx example pod in the `external-ns` namespace by running the following command.
 
 ```
 kubectl apply -f -<<EOF
@@ -531,26 +530,8 @@ spec:
       - name: nginx
         image: nginx
         imagePullPolicy: IfNotPresent
-
----
-
-kind: NetworkPolicy
-apiVersion: networking.k8s.io/v1
-metadata:
-  name: nginx
-  namespace: external-ns
-spec:
-  podSelector:
-    matchLabels:
-      app: nginx
-  policyTypes:
-  - Ingress
-  - Egress
-  ingress:
-  - ports:
-    - protocol: TCP
-      port: 80
 EOF
+
 ```
 
 You should receive an output similar to the following.
@@ -559,7 +540,7 @@ You should receive an output similar to the following.
 deployment.apps/nginx created
 networkpolicy.networking.k8s.io/nginx created
 ```
-Check `bastion` node's routing table again. You should have a new routing table entry.
+4. Check `bastion` node's routing table again. You should have a new routing table entry.
 
 ```
 ip route
@@ -569,22 +550,21 @@ ip route
 default via 10.0.1.1 dev ens5 proto dhcp src 10.0.1.10 metric 100 
 10.0.1.0/24 dev ens5 proto kernel scope link src 10.0.1.10 
 10.0.1.1 dev ens5 proto dhcp scope link src 10.0.1.10 metric 100 
-10.48.2.216/29 via 10.0.1.31 dev ens5 proto bird 
+10.48.2.216/29 via 10.0.1.31 dev ens5 proto bird
 ```
 
-#### 2.2.4.3. Access the nginx pod from outside the cluster
+5. Check the IP address that was assigned to our nginx pod.
 
-Check the IP address that was assigned to our nginx pod.
 ```
 kubectl get pods -n external-ns -o wide
 ```
 ```
 NAME                     READY   STATUS    RESTARTS   AGE   IP            NODE                                      NOMINATED NODE   READINESS GATES
-nginx-76dd8577bc-6jqnz   1/1     Running   0          10m   10.48.2.216   ip-10-0-1-31.eu-west-1.compute.internal   <none>           <none>
+nginx-5ff46477b5-tjrl5   1/1     Running   0          92s   10.48.2.216   ip-10-0-1-31.eu-west-1.compute.internal   <none>           <none>
 ```
 The output above shows that the nginx pod has an IP address from the externally routable IP Pool.
 
-Let's try connectivity to the nginx pod from the bastion node. Please make sure to replace the IP address of nginx pod from your lab in the following command.
+6. Let's try connectivity to the nginx pod from the bastion node. Please make sure to replace the IP address of nginx pod from your lab in the following command.
 
 ```
 curl 10.48.2.216
@@ -618,7 +598,7 @@ Commercial support is available at
 </html>
 ```
 
-If you would like to see IP allocation stats from Calico-IPAM, run the following command.
+7. If you would like to see IP allocation stats from Calico-IPAM, run the following command.
 
 ```
 calicoctl ipam show
@@ -626,12 +606,13 @@ calicoctl ipam show
 
 There is one IP address in use from the range `10.48.2.0/24`, which is for our nginx pod.
 ```
-+----------+--------------+-----------+------------+------------+
-| GROUPING |     CIDR     | IPS TOTAL | IPS IN USE |  IPS FREE  |
-+----------+--------------+-----------+------------+------------+
-| IP Pool  | 10.48.0.0/24 |       256 | 9 (4%)     | 247 (96%)  |
-| IP Pool  | 10.48.2.0/24 |       256 | 1 (0%)     | 255 (100%) |
-+----------+--------------+-----------+------------+------------+
++----------+----------------+-----------+------------+------------+
+| GROUPING |      CIDR      | IPS TOTAL | IPS IN USE |  IPS FREE  |
++----------+----------------+-----------+------------+------------+
+| IP Pool  | 10.48.0.0/24   |       256 | 36 (14%)   | 220 (86%)  |
+| IP Pool  | 10.48.2.0/24   |       256 | 1 (0%)     | 255 (100%) |
+| IP Pool  | 10.48.128.0/24 |       256 | 3 (1%)     | 253 (99%)  |
++----------+----------------+-----------+------------+------------+
 ```
 
 > __You have completed Lab2.2 and you should have by now a strong understanding of k8s networking__
