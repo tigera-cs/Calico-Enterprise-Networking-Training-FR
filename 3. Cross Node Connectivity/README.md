@@ -219,7 +219,9 @@ blackhole 10.48.0.128/26 proto 80
 * A static ARP entry, visible with `ip neigh show`
 * Static Bridge FDB entry, visible with `bridge fdb show`
 
-Run the following command to see the relevant `VXLAN` ARP entries.
+Run the following command to see the relevant `VXLAN` ARP entries. Note the followings:
+* `10.48.0.206` is the IP address and `66:14:9d:f4:2c:1f` is the mac address of `vxlan.calico` on worker1
+* `10.48.0.46` is the IP address and `66:4b:ff:e1:ef:01` is the mac address of `vxlan.calico` on worker2
 
 ```
 ip neigh show
