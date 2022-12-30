@@ -308,3 +308,5 @@ We now have the followings:
 | 10.48.2.0/24 | Calico - External IPPool (externally routable)           |
 | 10.49.0.0/16 | Kubernetes Service Network (via kubeadm `--service-cidr`) |
 
+
+> Congratulations! You have completed 1. Install Calico Enterprise lab.
