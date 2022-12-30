@@ -615,5 +615,5 @@ There is one IP address in use from the range `10.48.2.0/24`, which is for our n
 +----------+----------------+-----------+------------+------------+
 ```
 
-> __You have completed Lab2.2 and you should have by now a strong understanding of k8s networking__
+> **Congratulations! You have completed `3. Cross Node Connectivity` lab.**
 
