@@ -651,3 +651,5 @@ kubectl -n tigera-elasticsearch get secret tigera-secure-es-elastic-user -o go-t
 10. Open Kibana login page by clicking on the Kiaban icon on the Manager UI navigation bar on the left side of your browser page. You should a page similar to the following. Insert your username and password.
 
 ![kibana](img/4.Calico-enteprise-kibana.JPG)
+
+> __Congratulations! You have completed `1. Install Calico Enterprise` lab.__ 
