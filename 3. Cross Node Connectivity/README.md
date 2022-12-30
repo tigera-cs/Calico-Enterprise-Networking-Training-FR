@@ -368,22 +368,15 @@ pool2-ipv4-ippool     10.48.128.0/24   all()
 
 ### Configure Calico Enterprise BGP Peering to connect with an upsteam router outside the cluster
 
-Let's start by examining Calico BGP peering status on one of the nodes. There are different methods to find BGP status information, but all these methods require access to `calicoctl` in some form. The reason for this is that bird requires privileged access to the local bird socket to provide status information. In this excerise, we are using `calicoctl` configured as a binary on the node.
+1. Let's start by examining Calico BGP peering status on one of the nodes. There are different methods to find BGP status information, but all these methods require access to `calicoctl` in some form. The reason for this is that bird requires privileged access to the local bird socket to provide status information. In this excerise, we are using `calicoctl` configured as a binary on the node.
 
 SSH into worker1.
 
 ```
 ssh worker1
 ```
-Download `calicoctl` binary and make in executable. Please note that `calicoctl` uses Kubernetes kubeconfig file to authenticate to the cluster and run commands against the Kubernetes API. The kubeconfig file is already configured for you.
 
-```
-curl -L https://github.com/projectcalico/calico/releases/download/v3.23.2/calicoctl-linux-amd64 -o calicoctl
-chmod +x calicoctl
-sudo mv calicoctl /usr/local/bin
-
-```
-
+2. Follow the steps provided in [lab1](https://github.com/Pooriya-a/CalicoEnterprise-Networking-Training/blob/main/1.%20Install%20Calico%20Enterprise/README.md#install-calico-enterprise-command-line-utility-calicoctl) to install `calicoctl` as a binary on a single host.
 
 Check the BGP connection status from worker1 to other nodes (BGPPeers) in the cluster.
 
