@@ -3,7 +3,6 @@
 This lab provides the instructions to:
 
 * [Pod Network Connectivity Using Calico Enterprise CNI](https://github.com/Pooriya-a/CalicoEnterprise-Networking-Training/blob/main/2.%20Implement%20pod%20networking%20using%20Calico%20Enterprise%20CNI%20and%20IPAM/README.md#pod-network-connectivity-using-calico-enterprise-cni)
-https://github.com/Pooriya-a/CalicoEnterprise-Networking-Training/blob/main/2.%20Implement%20pod%20networking%20using%20Calico%20Enterprise%20CNI%20and%20IPAM/README.md#pod-network-connectivity-using-calico-enterprise-cni
 
 
 
