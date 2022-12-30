@@ -239,8 +239,8 @@ ip neigh show
 ```
 
 12. Run the following command to see the relevant bridge forward dabase enteries. Note the last two enteries that are relevant to the VXLAN networking in our scenario.
-* `66:14:9d:f4:2c:1f` is the mac address of `vxlan.calico` on worker1 and is accessible via `10.0.1.30`, which is the fabric network interface of worker1
-* `66:4b:ff:e1:ef:01` is the mac address of `vxlan.calico` on worker2 and is accessible via `10.0.1.31` which is the fabric network interface of worker2
+* `66:14:9d:f4:2c:1f` is the mac address of `vxlan.calico` on worker1 and is accessible via `10.0.1.30`, which is the fabric facing network interface of worker1
+* `66:4b:ff:e1:ef:01` is the mac address of `vxlan.calico` on worker2 and is accessible via `10.0.1.31`, which is the fabric facing network interface of worker2
 
 ```
 bridge fdb show
