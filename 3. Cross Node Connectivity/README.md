@@ -283,3 +283,36 @@ bridge fdb show
 ```
 13. Finally, Felix on each node learns about the other nodes routing information through the information (IPAM blocks and pod IP address) stored in the datastore and updates its node's routing table.
 
+14. Exit the ssh mode from control1.
+
+```
+exit
+```
+
+14. Reset the default IPPool configuration to native bgp again by setting `vxlanMode: Never`. Then save and exit.
+
+```
+kubectl edit ippools default-ipv4-ippool
+```
+
+You should see an output similar to the following.
+
+```
+apiVersion: projectcalico.org/v3
+kind: IPPool
+metadata:
+  creationTimestamp: "2022-12-29T22:21:11Z"
+  name: default-ipv4-ippool
+  resourceVersion: "245626"
+  uid: 3f053fa7-0d94-4d6d-94e6-e6582d80c0b0
+spec:
+  allowedUses:
+  - Workload
+  - Tunnel
+  blockSize: 26
+  cidr: 10.48.0.0/24
+  ipipMode: Never
+  natOutgoing: true
+  nodeSelector: all()
+  vxlanMode: Never
+```
