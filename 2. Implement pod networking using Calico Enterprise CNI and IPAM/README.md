@@ -220,41 +220,44 @@ exit
 
 ### Create an aditional Calico Enterprise IPPool
 
-This is the 3rd lab in a series of labs exploring k8s networking. It explores k8s ip adress management via Calico IPAM.
+When a Kubernetes cluster is bootstrapped, there are two address ranges that are configured. It is very important to understand these address ranges as they can't be changed once the cluster is created.
 
-In this lab, you will:
+* The cluster pod network CIDR is the range of IP addresses Kubernetes is expecting to be assigned to the pods in the cluster.
+* The services CIDR is the range of IP addresses that are used for the Cluster IPs of Kubernetes Sevices (the virtual IP that corresponds to each Kubernetes Service).
 
-* Check existing IPPools and create a new IPPool
+These are configured at cluster creation time (e.g. as initial kubeadm configuration).
+
+You can find these values using the following command.
+
+```
+kubectl cluster-info dump | grep -m 2 -E "service-cluster-ip-range|cluster-cidr"
+```
+
+```
+kubectl cluster-info dump | grep -m 2 -E "service-cluster-ip-range|cluster-cidr"
+                            "--service-cluster-ip-range=10.49.0.0/16",
+                            "--cluster-cidr=10.48.0.0/16",
+```
+
+When Calico Enterprise is deployed, a defaul IPPool is created in the cluster for each address family (IPv4-IPv6) enabled in the cluster. This cluster runs only IPv4. As a result, we will only have an IPPool for IPv4. By default, Calico creates a default IPPool for the whole cluster pod network CIDR range. However, this can be customized and a subset of pod network CIDR can be used for the default IPPool using the Installation resource at the install time. Calico Enterprise enables you to create additional IPPools post-install. In this section, we will:
+
+* Create a new IPPool
 * Update the yaobank deployments to receive IP addresses from the new IPPool
 
-
-### Check existing IPPools and create a new IPPool
-
-Check the IPPools that exist in the cluster. You should see two IPPools, one (default-ipv4-ippool) was created at the cluster creation time using the Installation resource and the other (external-pool) was created in the previous lab as part of checking pod's external connectivity exercise.
+1. Let's start by listing the configured IPPool in this cluster and getting familiar with some of the configuration parameters in the IPPool.
 
 ```
-kubectl get ippools.projectcalico.org
-```
-You should receive an output similar to the following.
-```
-NAME                  CREATED AT
-default-ipv4-ippool   2022-07-09T17:44:37Z
-external-pool         2022-07-09T20:02:25Z
-```
-Let's check the details of the `default-ipv4-ippool` and get familiar with some configuration parameters in the IPPool.
-
-```
-kubectl get ippool default-ipv4-ippool -o yaml
+kubectl get ippools default-ipv4-ippool -o yaml
 ```
 
 ```
 apiVersion: projectcalico.org/v3
 kind: IPPool
 metadata:
-  creationTimestamp: "2022-07-09T17:44:37Z"
+  creationTimestamp: "2022-12-29T22:21:11Z"
   name: default-ipv4-ippool
-  resourceVersion: "7202"
-  uid: 49ecd163-1a83-4566-872a-fb0390102724
+  resourceVersion: "1722"
+  uid: 3f053fa7-0d94-4d6d-94e6-e6582d80c0b0
 spec:
   allowedUses:
   - Workload
@@ -267,7 +270,7 @@ spec:
   vxlanMode: Never
 ```
 
-We have extracted the relevant information here. You can see from the output that the default IPPool range is 10.48.0.0/24, which is actually the Calico Initial default IP Pool range of our k8s cluster.
+We have extracted the relevant information here. You can see from the above output that the default IPPool range is 10.48.0.0/24, which is actually the Calico Enteprise initial default IP Pool range of our k8s cluster.
 Note the relevant information in the manifest:
 
 * allowedUses: specifies if this IPPool can be used for tunnel interfaces, workload interfaces, or both.
@@ -278,7 +281,20 @@ Note the relevant information in the manifest:
 * nodeSelector: selects the nodes that Calico IPAM should assign addresses from this pool to.
 
 
-Let's create a new IPPool by applying the following manifest. This time we want to use this IPPool to assign IP addresses to specific deployments instead of all the pods deployed in a namespace.
+**Note:** You can also get IPPool information using `calicotctl` instead of `kubectl` in the previous command. If you use Openshift, you can replace `kubectl` with `oc`.
+
+In this cluster, Calico Enteprise has been configured to allocate IP addresses for pods from the `10.48.0.0/24` CIDR, which is a subset of the `10.48.0.0/16` configured on Kubernetes.
+
+We have the following address ranges configured in this cluster.
+
+| CIDR         |  Purpose                                                  |
+|--------------|-----------------------------------------------------------|
+| 10.48.0.0/16 | Kubernetes Pod Network (via kubeadm `--pod-network-cidr`) |
+| 10.48.0.0/24 | Calico - Initial default IPPool                           |
+| 10.49.0.0/16 | Kubernetes Service Network (via kubeadm `--service-cidr`) |
+
+
+2. Let's create a new IPPool by applying the following manifest.
 
 ```
 kubectl apply -f -<<EOF
