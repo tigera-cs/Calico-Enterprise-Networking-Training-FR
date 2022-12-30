@@ -86,6 +86,9 @@ ip -c link
 4. Let's examine the node routing table. We do not see any routes related to VXLAN in the following routing table (You can compare this output with the output of the node routing table when VXLAN is enabled). We also see that bird is used to exchange routing information on this node. One example of such route is `10.48.0.192/26 via 10.0.1.30 dev ens5 proto bird `. 
 
 ```
+ip route
+```
+```
 default via 10.0.1.1 dev ens5 proto dhcp src 10.0.1.20 metric 100 
 10.0.1.0/24 dev ens5 proto kernel scope link src 10.0.1.20 
 10.0.1.1 dev ens5 proto dhcp scope link src 10.0.1.20 metric 100 
@@ -102,17 +105,20 @@ blackhole 10.48.0.128/26 proto bird
 10.48.128.192/26 via 10.0.1.30 dev ens5 proto bird 
 172.17.0.0/16 dev docker0 proto kernel scope link src 172.17.0.1 linkdown 
 ```
-4. Exit the ssh mode from control1.
+5. Exit the ssh mode from control1.
 
 ```
 exit
 ```
 
-5. Use the following command to configure the default IPPool to use vxlanMode by setting `vxlanMode: Always`. Then save and exit.
+6. Use the following command to configure the default IPPool to use vxlanMode by setting `vxlanMode: Always`. Then save and exit.
 
 ```
 kubectl edit ippools default-ipv4-ippool
 ```
+
+You should see an output similar to the following.
+
 ```
 apiVersion: projectcalico.org/v3
 kind: IPPool
@@ -131,4 +137,145 @@ spec:
   natOutgoing: true
   nodeSelector: all()
   vxlanMode: Always
+```
+
+7. Let's check on the configured interfaces on the node resource. We can see that all the nodes have got a VXLAN interface. This interface was added after we enabled VXLAN networking in the IPPool resource. calico-node watches the IPPool resource and as soon as the resource is configured to use VXLAN, it will configure the VXLAN device on the nodes. Make note of each node's VXLAN interface IP address. We will use them in the next steps.
+
+```
+kubectl get nodes -o yaml | grep -B1 -i vxlan
+```
+```
+      projectcalico.org/IPv4Address: 10.0.1.20/24
+      projectcalico.org/IPv4VXLANTunnelAddr: 10.48.0.135
+--
+      projectcalico.org/IPv4Address: 10.0.1.30/24
+      projectcalico.org/IPv4VXLANTunnelAddr: 10.48.0.206
+--
+      projectcalico.org/IPv4Address: 10.0.1.31/24
+      projectcalico.org/IPv4VXLANTunnelAddr: 10.48.0.46
+```
+
+
+8. ssh into control1 again.
+
+```
+ssh control1
+```
+
+9. Check the network interface on the node again. This time you should see a vxlan interface named `vxlan.calico`. 
+
+```
+ip -c link
+```
+
+```
+1: lo: <LOOPBACK,UP,LOWER_UP> mtu 65536 qdisc noqueue state UNKNOWN mode DEFAULT group default qlen 1000
+    link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
+2: ens5: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 9001 qdisc mq state UP mode DEFAULT group default qlen 1000
+    link/ether 02:79:d5:90:06:0b brd ff:ff:ff:ff:ff:ff
+    altname enp0s5
+3: docker0: <NO-CARRIER,BROADCAST,MULTICAST,UP> mtu 1500 qdisc noqueue state DOWN mode DEFAULT group default 
+    link/ether 02:42:ba:ae:65:54 brd ff:ff:ff:ff:ff:ff
+4: cali1bff47cba53@if3: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc noqueue state UP mode DEFAULT group default qlen 1000
+    link/ether ee:ee:ee:ee:ee:ee brd ff:ff:ff:ff:ff:ff link-netnsid 0
+10: calic628ed26868@if3: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 9001 qdisc noqueue state UP mode DEFAULT group default qlen 1000
+    link/ether ee:ee:ee:ee:ee:ee brd ff:ff:ff:ff:ff:ff link-netnsid 1
+11: calic7ceee6b788@if3: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 9001 qdisc noqueue state UP mode DEFAULT group default qlen 1000
+    link/ether ee:ee:ee:ee:ee:ee brd ff:ff:ff:ff:ff:ff link-netnsid 2
+12: cali4b871599db0@if3: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 9001 qdisc noqueue state UP mode DEFAULT group default qlen 1000
+    link/ether ee:ee:ee:ee:ee:ee brd ff:ff:ff:ff:ff:ff link-netnsid 3
+13: caliae0f159e5b3@if3: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 9001 qdisc noqueue state UP mode DEFAULT group default qlen 1000
+    link/ether ee:ee:ee:ee:ee:ee brd ff:ff:ff:ff:ff:ff link-netnsid 4
+14: cali2135bcd7981@if3: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 9001 qdisc noqueue state UP mode DEFAULT group default qlen 1000
+    link/ether ee:ee:ee:ee:ee:ee brd ff:ff:ff:ff:ff:ff link-netnsid 5
+17: vxlan.calico: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 8951 qdisc noqueue state UNKNOWN mode DEFAULT group default 
+    link/ether 66:c9:ee:b1:9b:47 brd ff:ff:ff:ff:ff:ff
+```
+
+10. Let's examine the node routing table again. We can routes related to VXLAN overlay networking as indicted by `10.48.0.192/26 via 10.48.0.206 dev vxlan.calico onlink ` and routes related to native bgp networking as indicated by `10.48.128.0/26 via 10.0.1.31 dev ens5 proto bird `. The reason for having both VXLAN and native bgp networking in this cluster is that we have two IPPools one of which is configured to use VXLAN and the other is configured to use native bgp.
+
+```
+ip route
+```
+```
+default via 10.0.1.1 dev ens5 proto dhcp src 10.0.1.20 metric 100 
+10.0.1.0/24 dev ens5 proto kernel scope link src 10.0.1.20 
+10.0.1.1 dev ens5 proto dhcp scope link src 10.0.1.20 metric 100 
+10.48.0.0/26 via 10.48.0.46 dev vxlan.calico onlink 
+10.48.0.128 dev cali1bff47cba53 scope link 
+blackhole 10.48.0.128/26 proto 80 
+10.48.0.130 dev calic628ed26868 scope link 
+10.48.0.131 dev calic7ceee6b788 scope link 
+10.48.0.132 dev cali4b871599db0 scope link 
+10.48.0.133 dev caliae0f159e5b3 scope link 
+10.48.0.134 dev cali2135bcd7981 scope link 
+10.48.0.192/26 via 10.48.0.206 dev vxlan.calico onlink 
+10.48.128.0/26 via 10.0.1.31 dev ens5 proto bird 
+10.48.128.192/26 via 10.0.1.30 dev ens5 proto bird 
+172.17.0.0/16 dev docker0 proto kernel scope link src 172.17.0.1 linkdown 
+```
+11. Felix on each node is watching the node objects in the datastore to learn about the VXLAN tunnel endpoints on remote nodes as well as to learn their IP addresses and MAC addresses. Felix will then program the local node with the following information on each node in the cluster:
+
+* A static ARP entry, visible with `ip neigh show`
+* Static Bridge FDB entry, visible with `bridge fdb show`
+
+Run the following command to see the relevant `VXLAN` ARP entries.
+
+```
+ip neigh show
+```
+```
+10.48.0.206 dev vxlan.calico lladdr 66:14:9d:f4:2c:1f PERMANENT
+10.0.1.10 dev ens5 lladdr 02:88:a0:32:73:4d REACHABLE
+10.48.0.46 dev vxlan.calico lladdr 66:4b:ff:e1:ef:01 PERMANENT
+10.0.1.1 dev ens5 lladdr 02:04:7a:86:55:c1 REACHABLE
+10.48.0.134 dev cali2135bcd7981 lladdr fa:67:13:92:26:c8 REACHABLE
+10.48.0.130 dev calic628ed26868 lladdr 52:12:d1:4c:04:20 REACHABLE
+10.48.0.133 dev caliae0f159e5b3 lladdr a6:0b:a3:07:ca:a3 REACHABLE
+10.0.1.30 dev ens5 lladdr 02:85:fc:c5:96:85 REACHABLE
+10.48.0.131 dev calic7ceee6b788 lladdr d6:c0:bc:a2:8f:49 DELAY
+10.0.1.31 dev ens5 lladdr 02:df:0c:da:8e:b1 REACHABLE
+10.48.0.132 dev cali4b871599db0 lladdr 76:17:69:d0:15:04 REACHABLE
+```
+
+12. Run the following command to see the relevant bridge forward dabase enteries. Note the last two enteries that are relevant to the VXLAN networking in our scenario.
+* `66:14:9d:f4:2c:1f` is the mac address of `vxlan.calico` on worker1 and is accessible via `10.0.1.30`, which is the fabric network interface of worker1
+* `66:4b:ff:e1:ef:01` is the mac address of `vxlan.calico` on worker2 and is accessible via `10.0.1.31` which is the fabric network interface of worker2
+
+```
+bridge fdb show
+```
+```
+01:00:5e:00:00:01 dev ens5 self permanent
+01:80:c2:00:00:00 dev ens5 self permanent
+01:80:c2:00:00:03 dev ens5 self permanent
+01:80:c2:00:00:0e dev ens5 self permanent
+33:33:00:00:00:01 dev ens5 self permanent
+33:33:ff:90:06:0b dev ens5 self permanent
+33:33:00:00:00:01 dev docker0 self permanent
+01:00:5e:00:00:6a dev docker0 self permanent
+33:33:00:00:00:6a dev docker0 self permanent
+01:00:5e:00:00:01 dev docker0 self permanent
+02:42:ba:ae:65:54 dev docker0 vlan 1 master docker0 permanent
+02:42:ba:ae:65:54 dev docker0 master docker0 permanent
+33:33:00:00:00:01 dev cali1bff47cba53 self permanent
+01:00:5e:00:00:01 dev cali1bff47cba53 self permanent
+33:33:ff:ee:ee:ee dev cali1bff47cba53 self permanent
+33:33:00:00:00:01 dev calic628ed26868 self permanent
+01:00:5e:00:00:01 dev calic628ed26868 self permanent
+33:33:ff:ee:ee:ee dev calic628ed26868 self permanent
+33:33:00:00:00:01 dev calic7ceee6b788 self permanent
+01:00:5e:00:00:01 dev calic7ceee6b788 self permanent
+33:33:ff:ee:ee:ee dev calic7ceee6b788 self permanent
+33:33:00:00:00:01 dev cali4b871599db0 self permanent
+01:00:5e:00:00:01 dev cali4b871599db0 self permanent
+33:33:ff:ee:ee:ee dev cali4b871599db0 self permanent
+33:33:00:00:00:01 dev caliae0f159e5b3 self permanent
+01:00:5e:00:00:01 dev caliae0f159e5b3 self permanent
+33:33:ff:ee:ee:ee dev caliae0f159e5b3 self permanent
+33:33:00:00:00:01 dev cali2135bcd7981 self permanent
+01:00:5e:00:00:01 dev cali2135bcd7981 self permanent
+33:33:ff:ee:ee:ee dev cali2135bcd7981 self permanent
+66:14:9d:f4:2c:1f dev vxlan.calico dst 10.0.1.30 self permanent
+66:4b:ff:e1:ef:01 dev vxlan.calico dst 10.0.1.31 self permanent
 ```
