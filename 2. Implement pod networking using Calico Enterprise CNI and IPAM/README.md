@@ -239,7 +239,7 @@ kubectl cluster-info dump | grep -m 2 -E "service-cluster-ip-range|cluster-cidr"
                             "--cluster-cidr=10.48.0.0/16",
 ```
 
-When Calico Enterprise is deployed, a defaul IPPool is created in the cluster for each address family (IPv4-IPv6) enabled in the cluster. This cluster runs only IPv4. As a result, we will only have an IPPool for IPv4. By default, Calico creates a default IPPool for the whole cluster pod network CIDR range. However, this can be customized and a subset of pod network CIDR can be used for the default IPPool using the Installation resource at the install time. Calico Enterprise enables you to create additional IPPools post-install.
+When Calico Enterprise is deployed, a defaul IPPool is created in the cluster for each address family (IPv4-IPv6) enabled in the cluster. This cluster runs only IPv4. As a result, we will only have an IPPool for IPv4. By default, Calico creates a default IPPool for the whole cluster pod network CIDR range. However, this can be customized and a subset of pod network CIDR can be used for the default IPPool using the Installation resource at the install time. Calico Enterprise enables you to create additional IPPools post-install.\
 In this section, we will:
 
 * Create a new IPPool
