@@ -281,3 +281,5 @@ bridge fdb show
 66:14:9d:f4:2c:1f dev vxlan.calico dst 10.0.1.30 self permanent
 66:4b:ff:e1:ef:01 dev vxlan.calico dst 10.0.1.31 self permanent
 ```
+13. Finally, Felix on each node learns about the other nodes routing information through the datastore and updates its node's routing table.
+
