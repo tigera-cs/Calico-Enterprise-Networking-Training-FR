@@ -11,7 +11,7 @@ This lab provides the instructions to:
 
 ### Pod Network Connectivity Using Calico Enterprise CNI
 
-As discussed in the previous lab, upstream Kubernetes by default does not provide a network interface plugin. In the previous lab, we deployed Calico Enterprise as the CNI provider, which enables pod networking. In this section, we focus on basic k8s networking by:   
+As discussed in the previous lab, upstream Kubernetes by default does not provide a network interface plugin. In the previous lab, we deployed Calico Enterprise as the CNI provider, which enables pod networking. In this section, we will focus on Kubernetes pod networking by:   
 
 * Examining what the network looks like from the perspecitve of a pod (the pod network namespace)
 * Examining what the network looks like from the perspecitve of the host (the host network namespace)
