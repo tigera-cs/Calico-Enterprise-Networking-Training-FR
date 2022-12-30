@@ -554,7 +554,7 @@ curl 10.0.1.20:30180
 
 In this section of the lab, we will configure the necessary resources to access the Calico Enterprise Manager UI and yaobank web UI.
 
-1. nginx ingress controller is already onfigured in the lab for you. Let's expose Calico Enterprise Manager UI and yaobank customer service by creating the following Ingress resource. Before applying the following manifest, make sure to update the `host` name by replacing `"LABNAME"` with the name of your lab instance in both of the following Ingress resources.
+1. nginx ingress controller is already onfigured in the lab for you. Let's expose Calico Enterprise Manager UI and yaobank customer service by creating the following Ingress resource. Before applying the following manifest, make sure to update the `host` name by replacing `<LABNAME>` with the name of your lab instance in both of the following Ingress resources.
 
 ```
 kubectl apply -f -<<EOF
@@ -567,7 +567,7 @@ metadata:
   namespace: yaobank
 spec:
   rules:
-  - host: "yaobank."LABNAME".lynx.tigera.ca"
+  - host: "yaobank.<LABNAME>.lynx.tigera.ca"
     http:
       paths:
       - path: /
@@ -588,7 +588,7 @@ metadata:
     kubernetes.io/ingress.class: "nginx"
 spec:
   rules:
-  - host: "manager."LABNAME".lynx.tigera.ca"
+  - host: "manager.<LABNAME>.lynx.tigera.ca"
     http:
       paths:
       - path: /
@@ -605,10 +605,10 @@ EOF
 2. Check your access to the yaobank application and CE Manager UI using the following URLs.
 
 ```
-https://yaobank."LABNAME".lynx.tigera.ca
+https://yaobank.<LABNAME>.lynx.tigera.ca
 ```
 ```
-https://manager."LABNAME".lynx.tigera.ca
+https://manager.<LABNAME>.lynx.tigera.ca
 ```
 
 3. Calico Enterprise Manager UI by default supports token-based auth. Let's create a serviceaccount so that we can use the associated token to log into the Manager UI. 
@@ -631,10 +631,10 @@ kubectl get secret $(kubectl get serviceaccount tigercub -o jsonpath='{range .se
 6. Copy the token where you can easily retrieve it later as we will use the token to access Calico Enterprise UI throughout the training. 
 7. Access the Manager UI by browsing to the following URL and paste your token in token field.
 
-**Note:** Do not foroget to replace `"LABNAME"` with your lab instance name.2
+**Note:** Do not foroget to replace `<LABNAME>` with your lab instance name.2
 
 ```
-https://manager."LABNAME".lynx.tigera.ca
+https://manager.<LABNAME>.lynx.tigera.ca
 ```
 You shouls see an output similar to the following.
 
