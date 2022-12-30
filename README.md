@@ -33,4 +33,4 @@ To ssh into the lab instances, type the following commands.
 
 ## Lab modules
 
-https://github.com/Pooriya-a/CalicoEnterprise-Networking-Training/tree/main/1.%20Install%20Calico%20Enterprise
+[1. Install Calico Enterprise](https://github.com/Pooriya-a/CalicoEnterprise-Networking-Training/tree/main/1.%20Install%20Calico%20Enterprise)
