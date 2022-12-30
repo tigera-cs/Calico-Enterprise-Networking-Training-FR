@@ -652,4 +652,4 @@ kubectl -n tigera-elasticsearch get secret tigera-secure-es-elastic-user -o go-t
 
 ![kibana](img/4.Calico-enteprise-kibana.JPG)
 
-> __Congratulations! You have completed `1. Install Calico Enterprise` lab.__ 
+#> __Congratulations! You have completed `1. Install Calico Enterprise` lab.__ 
