@@ -309,4 +309,4 @@ We now have the followings:
 | 10.49.0.0/16 | Kubernetes Service Network (via kubeadm `--service-cidr`) |
 
 
-> Congratulations! You have completed 1. Install Calico Enterprise lab.
+> **Congratulations! You have completed `2. Implement pod networking using Calico Enterprise CNI and IPAM` lab.**
