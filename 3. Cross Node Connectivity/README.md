@@ -365,7 +365,7 @@ pool2-ipv4-ippool     10.48.128.0/24   all()
 | 10.48.2.0/24  | Calico - External IPPool (externally routable)            |
 | 10.49.0.0/16  | Kubernetes Service Network (via kubeadm `--service-cidr`) |
 
-### Configure Calico BGP Peering to connect with a network outside of the cluster
+### Configure Calico Enterprise BGP Peering to connect with an upsteam router outside the cluster
 
 Let's start by examining Calico BGP peering status on one of the nodes. There are different methods to find BGP status information, but all these methods require access to `calicoctl` in some form. The reason for this is that bird requires privileged access to the local bird socket to provide status information. In this excerise, we are using `calicoctl` configured as a binary on the node.
 
