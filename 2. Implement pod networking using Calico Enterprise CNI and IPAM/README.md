@@ -9,17 +9,12 @@ This lab provides the instructions to:
 
 
 
-## 2.1. Networking: Pod Connectivity - Basic Lab
+### Pod Network Connectivity Using Calico Enterprise CNI
 
-This lab is the first of a series of labs exploring k8s networking concepts. This lab focuses on basic k8s networking from the POD and Host perspectives.   
-In this lab, you will:
-* Examine what the network looks like from the perspecitve of a pod (the pod network namespace)
-* Examine what the network looks like from the perspecitve of the host (the host network namespace)
+As discussed in the previous lab, upstream Kubernetes by default does not provide a network interface plugin. In the previous lab, we deployed Calico Enterprise as the CNI provider, which enables pod networking. In this section, we focus on basic k8s networking by:   
 
-### Before you begin
-
-The prerequisite to this lab is completing Lab1, which is installing Calico CNI and deploying the sample application Yaobank.
-
+* Examining what the network looks like from the perspecitve of a pod (the pod network namespace)
+* Examining what the network looks like from the perspecitve of the host (the host network namespace)
 
 ### Examine pod network namespace
 
