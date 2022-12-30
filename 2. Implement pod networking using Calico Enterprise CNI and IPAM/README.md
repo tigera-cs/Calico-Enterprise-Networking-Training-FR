@@ -271,7 +271,7 @@ spec:
   vxlanMode: Never
 ```
 
-We have extracted the relevant information here. You can see from the above output that the default IPPool range is 10.48.0.0/24, which was configured through the Installation resource in the previous lab `1. Install Calico Enterprise`.
+We have extracted the relevant information here. You can see from the above output that the default IPPool range is 10.48.0.0/24, which was configured through the Installation resource in the previous lab `1. Install Calico Enterprise`.\
 Note the relevant information in the manifest:
 
 * allowedUses: specifies if this IPPool can be used for tunnel interfaces, workload interfaces, or both.
