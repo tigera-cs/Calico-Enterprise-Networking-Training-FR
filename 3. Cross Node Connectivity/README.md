@@ -4,6 +4,7 @@
 This lab provides the instructions to:
 
 * [Examine pod network connectivity across cluster nodes using CE VXLAN mode](https://github.com/Pooriya-a/CalicoEnterprise-Networking-Training/blob/main/3.%20Cross%20Node%20Connectivity/README.md#examine-pod-network-connectivity-across-cluster-nodes-using-ce-vxlan-mode)
+* [Configure an externally routable IPPool]()
 
 ## Overview
 
@@ -319,6 +320,8 @@ spec:
 ```
 
 
+
+### Configure an externally routable IPPool
 
 Calico provides a sophisticated and powerful IPAM solution, which enables you to allocate and manage IP addresses for a variety of use cases and requirements.
 
