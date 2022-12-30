@@ -376,9 +376,9 @@ SSH into worker1.
 ssh worker1
 ```
 
-2. Follow the steps provided in [lab1](https://github.com/Pooriya-a/CalicoEnterprise-Networking-Training/blob/main/1.%20Install%20Calico%20Enterprise/README.md#install-calico-enterprise-command-line-utility-calicoctl) to install `calicoctl` as a binary on a single host.
+2. Follow the steps provided in [1. Install Calico Enterprise](https://github.com/Pooriya-a/CalicoEnterprise-Networking-Training/blob/main/1.%20Install%20Calico%20Enterprise/README.md#install-calico-enterprise-command-line-utility-calicoctl) to install `calicoctl` as a binary on a single host.
 
-Check the BGP connection status from worker1 to other nodes (BGPPeers) in the cluster.
+3. Once `calicoctl` is installed, check the BGP connection status from worker1 to other nodes (BGPPeers) in the cluster.
 
 ```
 sudo calicoctl node status
