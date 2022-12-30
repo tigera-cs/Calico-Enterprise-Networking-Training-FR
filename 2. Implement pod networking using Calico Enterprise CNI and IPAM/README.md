@@ -222,8 +222,8 @@ exit
 
 When a Kubernetes cluster is bootstrapped, there are two address ranges that are configured. It is very important to understand these address ranges as they can't be changed once the cluster is created.
 
-* The cluster pod network CIDR is the range of IP addresses Kubernetes is expecting to be assigned to the pods in the cluster.
-* The services CIDR is the range of IP addresses that are used for the Cluster IPs of Kubernetes Sevices (the virtual IP that corresponds to each Kubernetes Service).
+* Pod network CIDR is the range of IP addresses Kubernetes is expecting to be assigned to the pods in the cluster.
+* Service CIDR is the range of IP addresses that are used for the Cluster IPs of Kubernetes Sevices (the virtual IP that corresponds to each Kubernetes Service).
 
 These are configured at cluster creation time (e.g. as initial kubeadm configuration).
 
