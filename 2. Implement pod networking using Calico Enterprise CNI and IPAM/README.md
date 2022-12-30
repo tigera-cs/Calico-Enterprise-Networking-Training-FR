@@ -330,9 +330,9 @@ pool2-ipv4-ippool     10.48.128.0/24   all()
 ```
 
 
-There is a new version of the yaobank application that is configured for specific IP address treatment. We have configured the yaobank manifest with the necessary annotation to use the newly created IPPool. Note that annotations are configured only for summary and database deployment. Customer deployment can receive its IP address from any IPPool. Examine the annotation section of the deployments below and get yourself familiar with the configurations. 
+4. There is a new version of the yaobank application that is configured for specific IP address treatment. We have configured the yaobank manifest with the necessary annotation to use the newly created IPPool. Note that annotations are configured only for summary and database deployment. Customer deployment can receive its IP address from any IPPool. Examine the annotation section of the deployments below and get yourself familiar with the configurations. 
 
-Before deploying the new version of yaobank application, let's delete the old version to avoid any conflicts. 
+5. Before deploying the new version of yaobank application, let's delete the old version to avoid any conflicts. 
 
 ```
 kubectl delete namespace yaobank
@@ -342,7 +342,7 @@ You should receive an output similar to the following. This command might take a
 ```
 namespace "yaobank" deleted
 ```
-Now implement the new version of the app.
+6. Now implement the new version of the app.
 
 ```
 kubectl apply -f -<<EOF
@@ -537,7 +537,7 @@ serviceaccount/customer created
 deployment.apps/customer created
 ```
 
-Let's check on the Pods' ip address assignments.
+7. Let's check on the Pods' ip address assignments.
 
 ```
 kubectl get pod -n yaobank -o wide
@@ -556,8 +556,50 @@ You can see that Pod IP address assignment is aligned with the IPAM configuratio
 
 https://projectcalico.docs.tigera.io/networking/assign-ip-addresses-topology
 
+8. To check the IPAM allocations in the cluster, run the following command.
 
+```
+calicoctl ipam show
 
+```
 
+```
++----------+----------------+-----------+------------+-----------+
+| GROUPING |      CIDR      | IPS TOTAL | IPS IN USE | IPS FREE  |
++----------+----------------+-----------+------------+-----------+
+| IP Pool  | 10.48.0.0/24   |       256 | 36 (14%)   | 220 (86%) |
+| IP Pool  | 10.48.128.0/24 |       256 | 3 (1%)     | 253 (99%) |
++----------+----------------+-----------+------------+-----------+
+```
+
+9. Use `calicoctl` help to learn about subcommands available to `calicoctl ipam`. Please note that Tigera APIServer enables you to use Kubernetes native command line utility `kubectl` to manage most of the aspects of CE resources. However, there are some aspects of CE that can't be managed by `kubectl` and `calicoctl` needs to be used. Tere is no equivalent capability through `kubectl` to find the information that is provided below through `calicoctl ipam`.
+
+```
+calicoctl ipam -h
+
+```
+```
+Set the Calico datastore access information in the environment variables or
+supply details in a config file.
+
+Usage:
+  calicoctl ipam <command> [<args>...]
+
+    check            Check the integrity of the IPAM datastructures.
+    release          Release a Calico assigned IP address.
+    show             Show details of a Calico configuration,
+                     assigned IP address, or of overall IP usage.
+    split            Split the IP pool specified by the CIDR into
+                     the specified number of smaller IPPools.
+    configure        Configure IPAM
+
+Options:
+  -h --help      Show this screen.
+
+Description:
+  IP address management commands for Calico.
+
+  See 'calicoctl ipam <command> --help' to read about a specific subcommand.
+```
 
 > **Congratulations! You have completed `2. Implement pod networking using Calico Enterprise CNI and IPAM` lab.**
