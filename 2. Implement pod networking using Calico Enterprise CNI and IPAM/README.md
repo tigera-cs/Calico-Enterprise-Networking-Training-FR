@@ -317,7 +317,8 @@ You should receive an output similar to the following.
 ```
 ippool.projectcalico.org/pool2-ipv4-ippool created
 ```
-Check the IPPool that exist in the cluster.
+
+3.Check the IPPool that exist in the cluster.
 
 ```
 calicoctl get ippools
@@ -325,16 +326,13 @@ calicoctl get ippools
 ```
 NAME                  CIDR             SELECTOR   
 default-ipv4-ippool   10.48.0.0/24     all()      
-external-pool         10.48.2.0/24     all()      
-pool2-ipv4-ippool     10.48.128.0/24   all()  
+pool2-ipv4-ippool     10.48.128.0/24   all()
 ```
 
 
-### Update the yaobank deployments to receive IP addresses from the new IPPool
-
 There is a new version of the yaobank application that is configured for specific IP address treatment. We have configured the yaobank manifest with the necessary annotation to use the newly created IPPool. Note that annotations are configured only for summary and database deployment. Customer deployment can receive its IP address from any IPPool. Examine the annotation section of the deployments below and get yourself familiar with the configurations. 
 
-Before deploying the new version of yaobank application, let's delete the old version to avoid any conflicts.
+Before deploying the new version of yaobank application, let's delete the old version to avoid any conflicts. 
 
 ```
 kubectl delete namespace yaobank
@@ -547,10 +545,10 @@ kubectl get pod -n yaobank -o wide
 
 ```
 NAME                        READY   STATUS    RESTARTS   AGE   IP              NODE                                      NOMINATED NODE   READINESS GATES
-customer-68d67b588d-hn95n   1/1     Running   0          63s   10.48.0.8       ip-10-0-1-30.eu-west-1.compute.internal   <none>           <none>
-database-769f6644c5-t925v   1/1     Running   0          64s   10.48.128.0     ip-10-0-1-30.eu-west-1.compute.internal   <none>           <none>
-summary-dc858dd7b-mt5gv     1/1     Running   0          64s   10.48.128.1     ip-10-0-1-30.eu-west-1.compute.internal   <none>           <none>
-summary-dc858dd7b-pkt6l     1/1     Running   0          63s   10.48.128.192   ip-10-0-1-31.eu-west-1.compute.internal   <none>           <none>
+customer-687b8d8f74-tcclp   1/1     Running   0          16s   10.48.0.43      ip-10-0-1-31.eu-west-1.compute.internal   <none>           <none>
+database-75ccfdc84f-hqr64   1/1     Running   0          16s   10.48.128.0     ip-10-0-1-31.eu-west-1.compute.internal   <none>           <none>
+summary-7d78c9976b-sxv4k    1/1     Running   0          16s   10.48.128.192   ip-10-0-1-30.eu-west-1.compute.internal   <none>           <none>
+summary-7d78c9976b-wjdd5    1/1     Running   0          16s   10.48.128.1     ip-10-0-1-31.eu-west-1.compute.internal   <none>           <none>
 
 ```
 
@@ -560,134 +558,6 @@ https://projectcalico.docs.tigera.io/networking/assign-ip-addresses-topology
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-### Create a Calico Enterprise IPPool
-
-When a Kubernetes cluster is bootstrapped, there are two address ranges that are configured. It is very important to understand these address ranges as they can't be changed once the cluster is created.
-
-* The cluster pod network CIDR is the range of IP addresses Kubernetes is expecting to be assigned to the pods in the cluster.
-* The services CIDR is the range of IP addresses that are used for the Cluster IPs of Kubernetes Sevices (the virtual IP that corresponds to each Kubernetes Service).
-
-These are configured at cluster creation time (e.g. as initial kubeadm configuration).
-
-You can find these values using the following command.
-
-```
-kubectl cluster-info dump | grep -m 2 -E "service-cluster-ip-range|cluster-cidr"
-```
-
-```
-kubectl cluster-info dump | grep -m 2 -E "service-cluster-ip-range|cluster-cidr"
-                            "--service-cluster-ip-range=10.49.0.0/16",
-                            "--cluster-cidr=10.48.0.0/16",
-```
-
-
-### Create an additional Calico IPPool
-
-When Calico is deployed, a defaul IPPool is created in the cluster for each address family (IPv4-IPv6) enabled in the cluster. This cluster runs only IPv4. As a result, we will only have an IPPool for IPv4. By default, Calico creates a default IPPool for the whole cluster pod network CIDR range. However, this can be customized and a subset of pod network CIDR can be used for the default IPPool.\
-Let's find the configured IPPool in this cluster using the following command.
-
-```
-calicoctl get ippools
-```
-
-```
-NAME                  CIDR           SELECTOR   
-default-ipv4-ippool   10.48.0.0/24   all() 
-```
-
-Please note that you can also get IPPool information using `kubectl` instead of `calicoctl` in the previous command. If you use Openshift, you can replace `calicoctl` with `oc`.
-
-In this cluster, Calico has been configured to allocate IP addresses for pods from the `10.48.0.0/24` CIDR (which is a subset of the `10.48.0.0/16` configured on Kubernetes).
-
-We have the following address ranges configured in this cluster.
-
-| CIDR         |  Purpose                                                  |
-|--------------|-----------------------------------------------------------|
-| 10.48.0.0/16 | Kubernetes Pod Network (via kubeadm `--pod-network-cidr`) |
-| 10.48.0.0/24 | Calico - Initial default IPPool                           |
-| 10.49.0.0/16 | Kubernetes Service Network (via kubeadm `--service-cidr`) |
-
-
-
-Calico provides a sophisticated and powerful IPAM solution, which enables you to allocate and manage IP addresses for a variety of use cases and requirements.
-
-One of the use cases of Calico IPPool is to distinguish between different ranges of IP addresses that have different routablity scopes. If you are operating at a large scale, then IP addresses are precious resources. You might want to have a range of IPs that is only routable within the cluster, and another range of IPs that is routable across your enterprise. In that case, you can choose which pods get IPs from which range depending on whether workloads from outside of the cluster need direct access to the pods or not.
-
-We'll simulate this use case in this lab by creating a second IPPool to represent the externally routable pool.  (And we've already configured the underlying network to not allow routing of the existing IPPool outside of the cluster.)
-
-
-We're going to create a new pool for `10.48.2.0/24` that is externally routable.
-
-```
-kubectl apply -f -<<EOF
-apiVersion: projectcalico.org/v3
-kind: IPPool
-metadata:
-  name: external-pool
-spec:
-  cidr: 10.48.2.0/24
-  blockSize: 29
-  ipipMode: Never
-  natOutgoing: true
-EOF
-
-```
-```
-calicoctl get ippools
-```
-```
-NAME                  CIDR           SELECTOR   
-default-ipv4-ippool   10.48.0.0/24   all()      
-external-pool         10.48.2.0/24   all()       
-```
-
-We now have the followings:
-
-| CIDR         |  Purpose                                                  |
-|--------------|-----------------------------------------------------------|
-| 10.48.0.0/16 | Kubernetes Pod Network (via kubeadm `--pod-network-cidr`) |
-| 10.48.0.0/24 | Calico - Initial default IPPool                          |
-| 10.48.2.0/24 | Calico - External IPPool (externally routable)           |
-| 10.49.0.0/16 | Kubernetes Service Network (via kubeadm `--service-cidr`) |
 
 
 > **Congratulations! You have completed `2. Implement pod networking using Calico Enterprise CNI and IPAM` lab.**
