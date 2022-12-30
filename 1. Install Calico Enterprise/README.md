@@ -554,7 +554,7 @@ curl 10.0.1.20:30180
 
 In this section of the lab, we will configure the necessary resources to access the Calico Enterprise Manager UI and yaobank web UI.
 
-1. nginx ingress controller is already onfigured in the lab for you. Let's expose Calico Enterprise Manager UI and yaobank customer service by creating the following Ingress resource. Before applying the following manifest, make sure to update the **host** name by replacing **"LABNAME"** with the name of your lab instance in both of the following Ingress resources.
+1. nginx ingress controller is already onfigured in the lab for you. Let's expose Calico Enterprise Manager UI and yaobank customer service by creating the following Ingress resource. Before applying the following manifest, make sure to update the `host` name by replacing `"LABNAME"` with the name of your lab instance in both of the following Ingress resources.
 
 ```
 kubectl apply -f -<<EOF
@@ -617,7 +617,7 @@ https://manager."LABNAME".lynx.tigera.ca
 kubectl create sa tigercub
 ```
 
-4. We already created the serviceaccount, but the serviceaccount does not yet have the required permissions to log into the Manager UI. When CE is deployed, it creates a clusterrole called **tigera-network-admin**, which has full permissions to CE resource including the Manager UI. Let's bind our serviceaccount **tigercub** to the clusterrole **tigera-network-admin** using a clusterrolebinding.
+4. We already created the serviceaccount, but the serviceaccount does not yet have the required permissions to log into the Manager UI. When CE is deployed, it creates a clusterrole called `tigera-network-admin`, which has full permissions to CE resource including the Manager UI. Let's bind our serviceaccount `tigercub` to the clusterrole `tigera-network-admin` using a clusterrolebinding.
 
 ```
 kubectl create clusterrolebinding tigercub-bind --clusterrole tigera-network-admin --serviceaccount default:tigercub
@@ -631,7 +631,7 @@ kubectl get secret $(kubectl get serviceaccount tigercub -o jsonpath='{range .se
 6. Copy the token where you can easily retrieve it later as we will use the token to access Calico Enterprise UI throughout the training. 
 7. Access the Manager UI by browsing to the following URL and paste your token in token field.
 
-**Note:** Do not foroget to replace **"LABNAME"** with your lab instance name.2
+**Note:** Do not foroget to replace `"LABNAME"` with your lab instance name.2
 
 ```
 https://manager."LABNAME".lynx.tigera.ca
