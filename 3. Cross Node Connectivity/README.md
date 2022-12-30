@@ -289,7 +289,8 @@ bridge fdb show
 exit
 ```
 
-14. Reset the default IPPool configuration to native bgp again by setting `vxlanMode: Never`. Then save and exit.
+15. Reset the default IPPool configuration to native bgp again by setting `vxlanMode: Never`. Then save and exit.
+
 
 ```
 kubectl edit ippools default-ipv4-ippool
@@ -316,3 +317,5 @@ spec:
   nodeSelector: all()
   vxlanMode: Never
 ```
+
+
