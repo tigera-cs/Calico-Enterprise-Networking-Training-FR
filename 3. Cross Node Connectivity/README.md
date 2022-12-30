@@ -6,6 +6,7 @@ This lab provides the instructions to:
 * [Examine pod network connectivity across cluster nodes using CE VXLAN mode](https://github.com/Pooriya-a/CalicoEnterprise-Networking-Training/blob/main/3.%20Cross%20Node%20Connectivity/README.md#examine-pod-network-connectivity-across-cluster-nodes-using-ce-vxlan-mode)
 * [Configure an externally routable IPPool](https://github.com/Pooriya-a/CalicoEnterprise-Networking-Training/blob/main/3.%20Cross%20Node%20Connectivity/README.md#configure-an-externally-routable-ippool)
 * [Configure Calico Enterprise BGP Peering to connect with an upsteam router outside the cluster](https://github.com/Pooriya-a/CalicoEnterprise-Networking-Training/blob/main/3.%20Cross%20Node%20Connectivity/README.md#configure-calico-enterprise-bgp-peering-to-connect-with-an-upsteam-router-outside-the-cluster)
+* Configure a namespace to use an externally routable IP addresses
 
 ## Overview
 
@@ -387,24 +388,24 @@ sudo calicoctl node status
 Calico process is running.
 
 IPv4 BGP status
-+--------------+-------------------+-------+----------+-------------+
-| PEER ADDRESS |     PEER TYPE     | STATE |  SINCE   |    INFO     |
-+--------------+-------------------+-------+----------+-------------+
-| 10.0.1.20    | node-to-node mesh | up    | 17:44:47 | Established |
-| 10.0.1.31    | node-to-node mesh | up    | 17:44:46 | Established |
-+--------------+-------------------+-------+----------+-------------+
++--------------+-------------------+-------+------------+-------------+
+| PEER ADDRESS |     PEER TYPE     | STATE |   SINCE    |    INFO     |
++--------------+-------------------+-------+------------+-------------+
+| 10.0.1.20    | node-to-node mesh | up    | 2022-12-29 | Established |
+| 10.0.1.31    | node-to-node mesh | up    | 2022-12-29 | Established |
++--------------+-------------------+-------+------------+-------------+
 
 IPv6 BGP status
 No IPv6 peers found.
 ```
-This above output shows that currently Calico on worker1 is only peering with the other nodes (control1 and worker2) in the cluster and is not peering with any router outside of the cluster.
+4. The above output shows that currently Calico on worker1 is only peering with the other nodes (control1 and worker2) in the cluster and is not peering with any router outside of the cluster.
 
 ```
 exit
 ```
 
 
-Now, let's simulate BGP peering to a router outside of the cluster by peering to bastion node. We've already set up bastion node to act as a router and it is ready to accept new BGP peering.
+5. Now, let's simulate BGP peering to a router outside of the cluster by peering to bastion node. We've already set up bastion node to act as a router and it is ready to accept new BGP peering.
 
 If you are interested to see the standalone bird configurations on `bastion` node, run the following command from the `bastion` node.
 
@@ -412,7 +413,7 @@ If you are interested to see the standalone bird configurations on `bastion` nod
 sudo cat /etc/bird/bird.conf
 ```
 
-Let's add a new BGPPeer by running the following command. Get yourself familiar with the GBPPeer resource. `peerIP` is the IP address of the peering router, which is the `bastion` node in this case. `asNumber` is the AS number of the peering router.
+6. Let's add a new BGPPeer by running the following command. Get yourself familiar with the GBPPeer resource. `peerIP` is the IP address of the peering router, which is the `bastion` node in this case. `asNumber` is the AS number of the peering router.
 
 ```
 kubectl apply -f -<<EOF
@@ -432,7 +433,7 @@ You should receive an output similar to the following.
 bgppeer.projectcalico.org/bgppeer-global-64512 created
 ```
 
-Let's examine the BGP peering from worker1 node again by doing an SSH into the node.
+7. Let's examine the BGP peering from worker1 node again by doing an SSH into the node.
 
 ```
 ssh worker1
@@ -458,16 +459,17 @@ IPv6 BGP status
 No IPv6 peers found.
 ```
 
-The output above shows that Calico is now peered with the bastion node (`10.0.1.10`). This means Calico can share routes to and learn routes from bastion node.
+The output above shows that Calico is now peered with the bastion node (`10.0.1.10`). This means Calico can share routes to and learn routes from bastion node. Note that you should receive a similar output if you run the same command on the other cluster nodes.
 
-In a real-world on-prem deployment you would typically configure Calico nodes within a rack to peer with the ToRs (Top of Rack) routers, and the ToRs are then connected to the rest of the enterprise or data center network. In this way, if desired, pods can be reached from anywhere in then network. You could even go as far as giving some pods public IP address and have them addressable from the Internet if you wanted to.
+In a real-world on-prem deployment, you would typically configure Calico nodes within a rack to peer with the ToRs (Top of Rack) routers, and the ToRs are then connected to the rest of the enterprise or data center network. In this way, if desired, pods can be reached from anywhere in then network. You could even go as far as giving some pods public IP address and have them accessible from the Internet if you wanted to.
 
-We're done with adding the peers, so exit from worker1 to return back to bastion node.
+8. We're done with adding the peers, so exit from worker1 to return back to bastion node.
+
 ```
 exit
 ```
 
-### Configure a namespace to use externally routable IP addresses
+### Configure a namespace to use an externally routable IP addresses
 
 Calico supports annotations on both namespaces and pods that can be used to control which IPPool (or even which IP address) a pod will receive its address from when it is created. In this example, we're going to create a namespace to host externally routable Pods.
 
