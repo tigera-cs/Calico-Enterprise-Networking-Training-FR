@@ -216,7 +216,7 @@ exit
 ```
 
 
-### Create a Calico IPPool
+### Create a Calico Enterprise IPPool
 
 When a Kubernetes cluster is bootstrapped, there are two address ranges that are configured. It is very important to understand these address ranges as they can't be changed once the cluster is created.
 
