@@ -2,11 +2,12 @@
 
 This lab provides the instructions to:
 
-* [Pod network connectivity using Calico Enterprise CNI](https://github.com/Pooriya-a/CalicoEnterprise-Networking-Training/blob/main/2.%20Implement%20pod%20networking%20using%20Calico%20Enterprise%20CNI%20and%20IPAM/README.md#pod-network-connectivity-using-calico-enterprise-cni)
+* [Examine pod network connectivity using Calico Enterprise CNI](https://github.com/Pooriya-a/CalicoEnterprise-Networking-Training/blob/main/2.%20Implement%20pod%20networking%20using%20Calico%20Enterprise%20CNI%20and%20IPAM/README.md#pod-network-connectivity-using-calico-enterprise-cni)
+* [Create a Calico Enterprise IPPool](https://github.com/Pooriya-a/CalicoEnterprise-Networking-Training/blob/main/2.%20Implement%20pod%20networking%20using%20Calico%20Enterprise%20CNI%20and%20IPAM/README.md#create-a-calico-enterprise-ippool)
 
 
 
-### Pod network connectivity using Calico Enterprise CNI
+### Examine Pod network connectivity using Calico Enterprise CNI
 
 As discussed in the previous lab, upstream Kubernetes by default does not provide a network interface plugin. In the previous lab, we deployed Calico Enterprise as the CNI provider, which enables pod networking. In this section, we will focus on Kubernetes pod networking by:   
 
