@@ -17,11 +17,9 @@ By default, Kubernetes service cluster IPs are accessible only within the cluste
 After finshing this lab, you should gain a good understanding of Kubernetes services and how to use Calico Enterprise to advertise Kubernetes services.
 
 
-
-
 ## 3.1. Kubernetes Services - Basic Lab
 
-This is the 1st lab in a series of labs about k8s services. This lab explores the concepts related to k8s services and the drills down into the iptables chains that enable kube-proxy to deliver the service.
+This is the 1st lab in a series of labs about k8s services. This lab explores the concepts related to Kubernetes services and the drills down into the iptables chains that enable kube-proxy to deliver the service.
 
 In this lab, you will:
 
@@ -31,13 +29,13 @@ In this lab, you will:
 
 ### Examine kubernetes services
 
-We will run this lab from `worker1` so we can explore the iptables rules that kube-proxy has set up.
+1. kube-proxy is the Kubernetes service agent that is responsible to implement Kubernetes services definitions in a Kubernetes environment. We will run this lab from `worker1` so we can explore the iptables rules that kube-proxy has set up. Run the following command to ssh into worker1.
 
 ```
 ssh worker1
 ```
 
-Let's take a look at the services and pods in the `yaobank` kubernetes namespace.
+2. Let's take a look at the services and pods in the `yaobank` kubernetes namespace.
 
 ```
 kubectl get svc -n yaobank
