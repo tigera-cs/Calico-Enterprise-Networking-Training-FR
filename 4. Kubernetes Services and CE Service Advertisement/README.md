@@ -29,7 +29,7 @@ In this lab, you will:
 
 ### Examine kubernetes services
 
-1. kube-proxy is the Kubernetes service agent that is responsible to implement Kubernetes services definitions in a Kubernetes environment. We will run this lab from `worker1` so we can explore the iptables rules that kube-proxy has set up. Run the following command to ssh into worker1.
+1. kube-proxy is the Kubernetes service agent that is responsible to implement Kubernetes services definitions in a Kubernetes environment. We will run this lab from `worker1` so we can explore the iptables rules that kube-proxy has set up. Run the following command to ssh into `worker1`.
 
 ```
 ssh worker1
@@ -41,27 +41,27 @@ ssh worker1
 kubectl get svc -n yaobank
 ```
 ```
-NAME       TYPE        CLUSTER-IP      EXTERNAL-IP   PORT(S)        AGE
-customer   NodePort    10.49.206.189   <none>        80:30180/TCP   19m
-database   ClusterIP   10.49.130.110   <none>        2379/TCP       19m
-summary    ClusterIP   10.49.198.166   <none>        80/TCP         19m
+NAME       TYPE        CLUSTER-IP     EXTERNAL-IP   PORT(S)        AGE
+customer   NodePort    10.49.60.52    <none>        80:30180/TCP   10h
+database   ClusterIP   10.49.164.49   <none>        2379/TCP       10h
+summary    ClusterIP   10.49.80.32    <none>        80/TCP         10h
 ```
 
-We should have three services deployed. One `NodePort` service and two `ClusterIP` services.
+3. We should have three services deployed. One `NodePort` service and two `ClusterIP` services.
 
-Find the endpoints for each of the services.
+4. Run the following command to find the endpoints for each one of the services in yaobank namespace.
 
 ```
 kubectl get endpoints -n yaobank
 ```
 ```
 NAME       ENDPOINTS                         AGE
-customer   10.48.0.8:80                      20m
-database   10.48.128.0:2379                  20m
-summary    10.48.128.1:80,10.48.128.192:80   20m
+customer   10.48.0.43:80                     10h
+database   10.48.128.0:2379                  10h
+summary    10.48.128.1:80,10.48.128.192:80   10h
 ```
 
-List the pods in the yaobank namespace.
+5. List the pods in the yaobank namespace.
 
 ```
 kubectl get pods -n yaobank -o wide
@@ -69,19 +69,18 @@ kubectl get pods -n yaobank -o wide
 
 ```
 NAME                        READY   STATUS    RESTARTS   AGE   IP              NODE                                      NOMINATED NODE   READINESS GATES
-customer-68d67b588d-hn95n   1/1     Running   0          21m   10.48.0.8       ip-10-0-1-30.eu-west-1.compute.internal   <none>           <none>
-database-769f6644c5-t925v   1/1     Running   0          21m   10.48.128.0     ip-10-0-1-30.eu-west-1.compute.internal   <none>           <none>
-summary-dc858dd7b-mt5gv     1/1     Running   0          21m   10.48.128.1     ip-10-0-1-30.eu-west-1.compute.internal   <none>           <none>
-summary-dc858dd7b-pkt6l     1/1     Running   0          21m   10.48.128.192   ip-10-0-1-31.eu-west-1.compute.internal   <none>           <none>
+customer-687b8d8f74-tcclp   1/1     Running   0          10h   10.48.0.43      ip-10-0-1-31.eu-west-1.compute.internal   <none>           <none>
+database-75ccfdc84f-hqr64   1/1     Running   0          10h   10.48.128.0     ip-10-0-1-31.eu-west-1.compute.internal   <none>           <none>
+summary-7d78c9976b-sxv4k    1/1     Running   0          10h   10.48.128.192   ip-10-0-1-30.eu-west-1.compute.internal   <none>           <none>
+summary-7d78c9976b-wjdd5    1/1     Running   0          10h   10.48.128.1     ip-10-0-1-31.eu-west-1.compute.internal   <none>           <none>
 ```
 
-You can see that the IP addresses listed as the service endpoints in the previous step map to the backing pods as expected. Each service is backed by one or more pods spread across the nodes in our cluster.
+You can see that the IP addresses listed as the service endpoints in the previous step map to the backing pods in the yaobank namespace as expected. Each service is backed by one or more pods spread across the nodes in the cluster.
 
-### Explore ClusterIP iptables rules
 
-Let's explore the iptables rules that implement the `summary` service.
+6. Let's explore the iptables rules that implement the `summary` service.
 
-Find the service endpoints for `summary` `ClusterIP` service.
+7. Find the service endpoints for `summary` `ClusterIP` service.
 
 ```
 kubectl get endpoints -n yaobank summary
