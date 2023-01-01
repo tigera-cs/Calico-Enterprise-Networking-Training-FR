@@ -409,3 +409,100 @@ curl 10.49.60.52
   </body>
 </html>
 ```
+
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+### Advertise individual service cluster IP
+
+You can set `externalTrafficPolicy: Local` on a Kubernetes service to request that external traffic to a service only be routed via nodes which have a local service endpoint (backing pod). This preserves the client source IP and avoids the second hop when kube-proxy loadbalances to a service endpoint (backing pod) on another node. 
+
+Traffic to the cluster IP for a service with `externalTrafficPolicy: Local` will be load-balanced across the nodes with endpoints for that service.
+Note that `externalTrafficPolicy: Local` is only supported with service types of LoadBalancer and NodePort. For more information, visit the following link.
+
+https://projectcalico.docs.tigera.io/networking/advertise-service-ips 
+
+
+Update the `customer` service to add `externalTrafficPolicy: Local`.
+
+```
+kubectl patch svc -n yaobank customer -p '{"spec":{"externalTrafficPolicy":"Local"}}'
+```
+
+```
+service/customer patched
+```
+
+Examine the routes on bastion node.
+
+```
+ip route
+```
+
+```
+default via 10.0.1.1 dev ens5 proto dhcp src 10.0.1.10 metric 100 
+10.0.1.0/24 dev ens5 proto kernel scope link src 10.0.1.10 
+10.0.1.1 dev ens5 proto dhcp scope link src 10.0.1.10 metric 100 
+10.48.2.216/29 via 10.0.1.31 dev ens5 proto bird 
+10.49.0.0/16 proto bird 
+        nexthop via 10.0.1.20 dev ens5 weight 1 
+        nexthop via 10.0.1.30 dev ens5 weight 1 
+        nexthop via 10.0.1.31 dev ens5 weight 1 
+10.49.206.189 via 10.0.1.30 dev ens5 proto bird 
+```
+
+You should now have a `/32` route for the yaobank customer service (`10.49.206.189` in the above example output) advertised from the node hosting the customer service pod (worker1, `10.0.1.30` in this example output).
+
+```
+kubectl get pods -n yaobank -l app=customer -o wide
+```
+
+```
+NAME                        READY   STATUS    RESTARTS   AGE    IP          NODE                                      NOMINATED NODE   READINESS GATES
+customer-68d67b588d-hn95n   1/1     Running   0          140m   10.48.0.8   ip-10-0-1-30.eu-west-1.compute.internal   <none>           <none>
+```
+
+For each active service with `externalTrafficPolicy: Local`, Calico advertise the IP for that service as a `/32` route from the nodes that have endpoints for that service. This means that external traffic to the service will get load-balanced across all nodes in the cluster that have a service endpoint (backing pod) for the service by the network using ECMP (Equal Cost Multi Path). Kube-proxy then DNATs the traffic to the local backing pod on that node (or load-balances equally to the local backing pods if there is more than one on the node).
+
+The two main advantages of using `externalTrafficPolicy: Local` in this way are:
+* There is a network efficiency win avoiding potential second hop of kube-proxy load-balancing to another node.
+* The client source IP addresses are preserved, which can be useful if you want to restrict access to a service to specific IP addresses using network policy applied to the backing pods.
+
+
+In the previous labs, we accessed the yaobank frontend UI using curl from the `control1` node and we also mentioned that we can try any other cluster node IP address to hit the NodePort. As we've now set `externalTrafficPolicy: Local`, this will no longer work since there are no `customer` pods hosted on `control1`. Accessing the NodePort can only happen via `worker1` at this point.
+
+The following should fail.
+
+```
+curl 10.0.1.20:30180
+```
+The following should go through. Please make sure to use the node IP address where customer pod is running. 
+
+```
+curl 10.0.1.30:30180
+```
+```
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <title>YAO Bank</title>
+    <style>
+    h2 {
+      font-family: Arial, Helvetica, sans-serif;
+    }
+    h1 {
+      font-family: Arial, Helvetica, sans-serif;
+    }
+    p {
+      font-family: Arial, Helvetica, sans-serif;
+    }
+    </style>
+  </head>
+  <body>
+        <h1>Welcome to YAO Bank</h1>
+        <h2>Name: Spike Curtis</h2>
+        <h2>Balance: 2389.45</h2>
+        <p><a href="/logout">Log Out >></a></p>
+  </body>
+```
