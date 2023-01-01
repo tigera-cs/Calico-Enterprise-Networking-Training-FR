@@ -478,21 +478,21 @@ customer-687b8d8f74-tcclp   1/1     Running   0          2d3h   10.48.0.43   ip-
 For each active service with `externalTrafficPolicy: Local`, Calico advertise the IP for that service as a `/32` route from the nodes that have endpoints for that service. This means that external traffic to the service will get load-balanced across all nodes in the cluster that have a service endpoint (backing pod) for the service by the network using ECMP (Equal Cost Multi Path). Kube-proxy then DNATs the traffic to the local backing pod on that node (or load-balances equally to the local backing pods if there is more than one on the node).
 
 The two main advantages of using `externalTrafficPolicy: Local` in this way are:
-* There is a network efficiency win avoiding potential second hop of kube-proxy load-balancing to another node.
-* The client source IP addresses are preserved, which can be useful if you want to restrict access to a service to specific IP addresses using network policy applied to the backing pods.
+* There is a network efficiency win avoiding potential second hop of kube-proxy load-balancing to another node
+* The client source IP addresses are preserved, which can be useful if you want to restrict access to a service to specific IP addresses using network policy applied to the backing pods
 
 
-In the previous labs, we accessed the yaobank frontend UI using curl from the `control1` node and we also mentioned that we can try any other cluster node IP address to hit the NodePort. As we've now set `externalTrafficPolicy: Local`, this will no longer work since there are no `customer` pods hosted on `control1`. Accessing the NodePort can only happen via `worker1` at this point.
+4. In the previous labs, we accessed the yaobank frontend UI using curl from the `control1` node and we also mentioned that we can try any other cluster node IP address to hit the NodePort. As we've now set `externalTrafficPolicy: Local`, this will no longer work since there are no `customer` pods hosted on `control1`. Accessing the NodePort can only happen via `worker1` at this point.
 
-The following should fail.
+5. The following should fail because of `externalTrafficPolicy: Local` configured on the `customer` service.
 
 ```
 curl 10.0.1.20:30180
 ```
-The following should go through. Please make sure to use the node IP address where customer pod is running. 
+ 6. The following should go through. Please make sure to use the node IP address where customer pod is running. 
 
 ```
-curl 10.0.1.30:30180
+curl 10.0.1.31:30180
 ```
 ```
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
