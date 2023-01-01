@@ -17,6 +17,7 @@ By default, Kubernetes service cluster IPs are accessible only within the cluste
 
 After finshing this lab, you should gain a good understanding of Kubernetes services and how to use Calico Enterprise to advertise Kubernetes services.
 
+_______________________________________________________________________________________________________________________________________________________________________
 
 ### Explore Kubernetes service ClusterIP iptables rules
 
@@ -188,6 +189,10 @@ In summary, for a packet being sent to a clusterIP:
 * The KUBE-SVC-XXXXXXXXXXXXXXXX chain load balances the packet to a random service endpoint KUBE-SEP-XXXXXXXXXXXXXXXX chain.
 * The KUBE-SEP-XXXXXXXXXXXXXXXX chain DNATs the packet so it will get routed to the service endpoint (backing pod).
 
+
+_______________________________________________________________________________________________________________________________________________________________________
+
+
 ### Explore Kubernetes service NodePort iptables rules
 
 `NodePort` service enables us to expose a service outside the cluster using a static port on the cluster nodes. To reach a NodePort service from outside the cluster, we just need to use any of the cluster nodes IP addresses along with a port on the node. The default port range for NodePort is 30000-32767, but this range can be changed or extended through the kube-apiserver configuration.
@@ -274,6 +279,9 @@ In summary, for a packet being sent to a NodePort:
 * The KUBE-NODEPORTS chaing matches on the NodePort and jumps to the corresponding KUBE-SVC-XXXXXXXXXXXXXXXX chain.
 * The KUBE-SVC-XXXXXXXXXXXXXXXX chain load balances the packet to a random service endpoint KUBE-SEP-XXXXXXXXXXXXXXXX chain.
 * The KUBE-SEP-XXXXXXXXXXXXXXXX chain DNATs the packet so it will get routed to the service endpoint (backing pod).
+
+
+_______________________________________________________________________________________________________________________________________________________________________
 
 
 ### Advertise the ServiceIP range using Calico Enterprise
@@ -414,7 +422,6 @@ curl 10.49.60.52
 
 
 _______________________________________________________________________________________________________________________________________________________________________
-
 
 
 
