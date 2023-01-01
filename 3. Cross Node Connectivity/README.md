@@ -3,12 +3,13 @@
 
 This lab provides the instructions to:
 
+* [Overview]()
 * [Examine pod network connectivity across cluster nodes using CE VXLAN mode](https://github.com/Pooriya-a/CalicoEnterprise-Networking-Training/blob/main/3.%20Cross%20Node%20Connectivity/README.md#examine-pod-network-connectivity-across-cluster-nodes-using-ce-vxlan-mode)
 * [Configure an externally routable IPPool](https://github.com/Pooriya-a/CalicoEnterprise-Networking-Training/blob/main/3.%20Cross%20Node%20Connectivity/README.md#configure-an-externally-routable-ippool)
 * [Configure Calico Enterprise BGP Peering to connect with an upsteam router outside the cluster](https://github.com/Pooriya-a/CalicoEnterprise-Networking-Training/blob/main/3.%20Cross%20Node%20Connectivity/README.md#configure-calico-enterprise-bgp-peering-to-connect-with-an-upsteam-router-outside-the-cluster)
 * [Configure a namespace to use an externally routable IP addresses](https://github.com/Pooriya-a/CalicoEnterprise-Networking-Training/blob/main/3.%20Cross%20Node%20Connectivity/README.md#configure-a-namespace-to-use-an-externally-routable-ip-addresses)
 
-## Overview
+### Overview
 
 When it comes to pod networking, a pod either needs to talk to other pods that are running on the same node or different nodes. If the communicating pods are collocated on the same node, it is called intrahost networking. In this scenario, pods are connected together through a layer 2 or layer 3 device on the host depending on the CNI solution used. However, pods traffic stays within the same node no matter if the pods are connected using a layer 2 or layer 3 device.
 
