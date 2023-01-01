@@ -552,32 +552,12 @@ curl 10.0.1.20:30180
 
 ### Access CE Manager UI using ingress
 
-In this section of the lab, we will configure the necessary resources to access the Calico Enterprise Manager UI and yaobank web UI.
+In this section of the lab, we will configure the necessary resources to access the Calico Enterprise Manager UI.
 
-1. nginx ingress controller is already onfigured in the lab for you. Let's expose Calico Enterprise Manager UI and yaobank customer service by creating the following Ingress resource. Before applying the following manifest, make sure to update the `host` name by replacing `<LABNAME>` with the name of your lab instance in both of the following Ingress resources.
+1. nginx ingress controller is already onfigured in the lab for you. Let's expose Calico Enterprise Manager UI service by creating the following Ingress resource. Before applying the following manifest, make sure to update the `host` name by replacing `<LABNAME>` with the name of your lab instance in both of the following Ingress resources.
 
 ```
 kubectl apply -f -<<EOF
-apiVersion: networking.k8s.io/v1
-kind: Ingress
-metadata:
-  annotations:
-    kubernetes.io/ingress.class: "nginx"
-  name: yaobank
-  namespace: yaobank
-spec:
-  rules:
-  - host: "yaobank.<LABNAME>.lynx.tigera.ca"
-    http:
-      paths:
-      - path: /
-        pathType: Prefix
-        backend:
-          service:
-            name: customer
-            port:
-              number: 80
----
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
@@ -604,9 +584,6 @@ EOF
 
 2. Check your access to the yaobank application and CE Manager UI using the following URLs.
 
-```
-https://yaobank.<LABNAME>.lynx.tigera.ca
-```
 ```
 https://manager.<LABNAME>.lynx.tigera.ca
 ```
