@@ -6,7 +6,7 @@ This lab provides the instructions to:
 * [Explore Kubernetes service ClusterIP iptables rules](https://github.com/Pooriya-a/CalicoEnterprise-Networking-Training/blob/main/4.%20Kubernetes%20Services%20and%20CE%20Service%20Advertisement/README.md#explore-kubernetes-service-clusterip-iptables-rules)
 * [Explore Kubernetes service NodePort iptables rules](https://github.com/Pooriya-a/CalicoEnterprise-Networking-Training/blob/main/4.%20Kubernetes%20Services%20and%20CE%20Service%20Advertisement/README.md#explore-kubernetes-service-nodeport-iptables-rules)
 * [Advertise the ServiceIP range using Calico Enterprise](https://github.com/Pooriya-a/CalicoEnterprise-Networking-Training/blob/main/4.%20Kubernetes%20Services%20and%20CE%20Service%20Advertisement/README.md#advertise-the-serviceip-range-using-calico-enterprise)
-* [Use `externalTrafficPolicy: Local`to preserve the source IP and avoid extra hop in routing](https://github.com/Pooriya-a/CalicoEnterprise-Networking-Training/blob/main/4.%20Kubernetes%20Services%20and%20CE%20Service%20Advertisement/README.md#use-externaltrafficpolicy-localto-preserve-the-source-ip-and-avoid-extra-hop-in-routing)
+* [Advertise services with `externalTrafficPolicy: Local`to preserve the source IP and avoid extra hop in routing](https://github.com/Pooriya-a/CalicoEnterprise-Networking-Training/blob/main/4.%20Kubernetes%20Services%20and%20CE%20Service%20Advertisement/README.md#use-externaltrafficpolicy-localto-preserve-the-source-ip-and-avoid-extra-hop-in-routing)
 
 
 ## Overview
@@ -426,17 +426,17 @@ ________________________________________________________________________________
 
 
 
-### Use `externalTrafficPolicy: Local`to preserve the source IP and avoid extra hop in routing
+### Advertise services with `externalTrafficPolicy: Local`to preserve the source IP and avoid extra hop in routing
 
 You can set `externalTrafficPolicy: Local` on a Kubernetes service to request that external traffic to a service only be routed via nodes which have a local service endpoint (backing pod). This preserves the client source IP and avoids the second hop when kube-proxy loadbalances to a service endpoint (backing pod) on another node. 
 
 Traffic to the cluster IP for a service with `externalTrafficPolicy: Local` will be load-balanced across the nodes with endpoints for that service.
 Note that `externalTrafficPolicy: Local` is only supported with service types of LoadBalancer and NodePort. For more information, visit the following link.
 
-https://projectcalico.docs.tigera.io/networking/advertise-service-ips 
+https://docs.tigera.io/networking/advertise-service-ips
 
 
-Update the `customer` service to add `externalTrafficPolicy: Local`.
+1. Let's start by updating the `customer` service to add `externalTrafficPolicy: Local`.
 
 ```
 kubectl patch svc -n yaobank customer -p '{"spec":{"externalTrafficPolicy":"Local"}}'
@@ -446,7 +446,7 @@ kubectl patch svc -n yaobank customer -p '{"spec":{"externalTrafficPolicy":"Loca
 service/customer patched
 ```
 
-Examine the routes on bastion node.
+2. Examine the routes on bastion node.
 
 ```
 ip route
@@ -461,18 +461,18 @@ default via 10.0.1.1 dev ens5 proto dhcp src 10.0.1.10 metric 100
         nexthop via 10.0.1.20 dev ens5 weight 1 
         nexthop via 10.0.1.30 dev ens5 weight 1 
         nexthop via 10.0.1.31 dev ens5 weight 1 
-10.49.206.189 via 10.0.1.30 dev ens5 proto bird 
+10.49.60.52 via 10.0.1.31 dev ens5 proto bird 
 ```
 
-You should now have a `/32` route for the yaobank customer service (`10.49.206.189` in the above example output) advertised from the node hosting the customer service pod (worker1, `10.0.1.30` in this example output).
+3. You should now have a `/32` route for the yaobank customer service (`10.49.60.52` in the above example output) advertised from the node hosting the customer service pod (worker1, `10.0.1.30` in this example output).
 
 ```
 kubectl get pods -n yaobank -l app=customer -o wide
 ```
 
 ```
-NAME                        READY   STATUS    RESTARTS   AGE    IP          NODE                                      NOMINATED NODE   READINESS GATES
-customer-68d67b588d-hn95n   1/1     Running   0          140m   10.48.0.8   ip-10-0-1-30.eu-west-1.compute.internal   <none>           <none>
+NAME                        READY   STATUS    RESTARTS   AGE    IP           NODE                                      NOMINATED NODE   READINESS GATES
+customer-687b8d8f74-tcclp   1/1     Running   0          2d3h   10.48.0.43   ip-10-0-1-31.eu-west-1.compute.internal   <none>           <none>
 ```
 
 For each active service with `externalTrafficPolicy: Local`, Calico advertise the IP for that service as a `/32` route from the nodes that have endpoints for that service. This means that external traffic to the service will get load-balanced across all nodes in the cluster that have a service endpoint (backing pod) for the service by the network using ECMP (Equal Cost Multi Path). Kube-proxy then DNATs the traffic to the local backing pod on that node (or load-balances equally to the local backing pods if there is more than one on the node).
