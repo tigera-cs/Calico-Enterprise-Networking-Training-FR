@@ -6,6 +6,14 @@ This lab provides the instructions to:
 * [Create an aditional Calico Enterprise IPPool](https://github.com/Pooriya-a/CalicoEnterprise-Networking-Training/blob/main/2.%20Implement%20pod%20networking%20using%20Calico%20Enterprise%20CNI%20and%20IPAM/README.md#create-an-aditional-calico-enterprise-ippool)
 
 
+### Overview
+
+Calico is one of the most popular open-source CNI plugins available for the Kubernetes ecosystem. Calico provides a performant, scalable, and flexible CNI solution with advanced network administration capabilities. Like other CNI solutions, Calico CNI configures the pod IP address and updates the pod and node routing table to establish pod networking. However, there are some differences between how various CNI providers implement pod networking in a Kubernetes system. This lab covers how Calico CNI and IPAM implement pod networing and walk you through some of the advanced IPAM capabilities and use cases.
+
+
+
+_______________________________________________________________________________________________________________________________________________________________________
+
 
 
 ### Examine pod network connectivity using Calico Enterprise CNI
@@ -217,6 +225,7 @@ To understand this better, consider this route in the example output above `10.4
 exit
 ```
 
+_______________________________________________________________________________________________________________________________________________________________________
 
 ### Create an aditional Calico Enterprise IPPool
 
