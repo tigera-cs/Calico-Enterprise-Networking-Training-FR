@@ -795,7 +795,7 @@ yaobank   <none>   yaobank.cenetworking.lynx.tigera.ca   10.0.1.30,10.0.1.31   8
 
 ![yaobank](img/yaobank-ingress-access.JPG)
 
-Note we do not use a NodePort service anymore for our customer application in this last manifest as now we use the ingress to access it.
+8. Note we do not use a NodePort service anymore for our customer application in this last manifest as now we use the ingress to access it.
 
 ```
 kubectl get svc -n yaobank
@@ -808,7 +808,7 @@ database   ClusterIP   10.49.100.163   <none>        2379/TCP   22m
 summary    ClusterIP   10.49.102.204   <none>        80/TCP     22m
 ```
 
-8. We will need to use yaobank application using NodePort service in the next lab. Let's delete the yaobank namespace as we will need to deploy it again.
+9. We will need to use yaobank application using NodePort service in the next lab. Let's delete the yaobank namespace as we will need to deploy it again.
 
 ```
 kubectl delete namespace yaobank
