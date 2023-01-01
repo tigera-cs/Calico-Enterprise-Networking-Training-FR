@@ -412,6 +412,8 @@ curl 10.49.60.52
 
 _______________________________________________________________________________________________________________________________________________________________________
 
+
+
 ### Advertise individual service cluster IP
 
 You can set `externalTrafficPolicy: Local` on a Kubernetes service to request that external traffic to a service only be routed via nodes which have a local service endpoint (backing pod). This preserves the client source IP and avoids the second hop when kube-proxy loadbalances to a service endpoint (backing pod) on another node. 
