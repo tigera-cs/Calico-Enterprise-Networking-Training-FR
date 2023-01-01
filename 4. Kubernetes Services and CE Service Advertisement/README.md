@@ -523,17 +523,17 @@ curl 10.0.1.31:30180
 
 _______________________________________________________________________________________________________________________________________________________________________
 
-Kubernetes Ingress is an API object that provides routing rules to manage external users' access to the services in a Kubernetes cluster, typically via HTTPS/HTTP. With Ingress, you can easily set up rules for routing traffic without creating a bunch of Load Balancers or exposing each service on the node. [copied from IBM](https://www.ibm.com/cloud/blog/kubernetes-ingress#:~:text=Kubernetes%20Ingress%20is%20an%20API,each%20service%20on%20the%20node.)
+Kubernetes Ingress is an API object that provides routing rules to manage external users' access to the services in a Kubernetes cluster, typically via HTTPS/HTTP. With Ingress, you can easily set up rules for routing traffic without creating a bunch of Load Balancers or exposing each service on the node. [IBM Source](https://www.ibm.com/cloud/blog/kubernetes-ingress#:~:text=Kubernetes%20Ingress%20is%20an%20API,each%20service%20on%20the%20node.)
 
-### Remove previous yaobank namespace
+In this section, we will use an ingress controller to expose the Yaobank Customer service.
 
-In this lab, we will be exposing the Yaobank Customer service using ingress controller. Let's start with removing the previous yaobank deployment and proceed to deploying the new configuration. For simplicity, let's just remove the namespace, which deletes all included objects. It might take 1-2 minutes for the namespace to get deleted. Please wait until the namespace is deleted.
+1. Let's start with removing the previous yaobank deployment and proceed to deploying the new configuration. For simplicity, let's just remove the namespace, which deletes all included objects. It might take 1-2 minutes for the namespace to get deleted. Please wait until the namespace is deleted.
 
 ```
 kubectl delete ns yaobank
 ```
 
-### Deploy an ingress controller that listens to all namespaces
+2. Deploy an ingress controller that listens to all namespaces
 
 Ingress is the built-in kubernetes framework for load-balancing http traffic. Cloud providers offer a similar functionality out of the box via cloud load-balancers. Ingress allows the manipulation of incoming http requests, natting/routing traffic to back-end services based on provided host/path, or even passing-through traffic. It can effectively provide L7-based policies and typical load-balancing features such as stickiness, health probes, or weight-based load-balancing.
 
@@ -546,36 +546,32 @@ kubectl get all -n ingress-nginx
 
 ```
 NAME                                       READY   STATUS      RESTARTS   AGE
-pod/ingress-nginx-admission-create-r4zr4   0/1     Completed   0          8h
-pod/ingress-nginx-admission-patch-g2vsb    0/1     Completed   0          8h
-pod/ingress-nginx-controller-4ssll         1/1     Running     0          7h17m
-pod/ingress-nginx-controller-xhj56         1/1     Running     0          7h17m
+pod/ingress-nginx-admission-create-5sc7j   0/1     Completed   0          2d22h
+pod/ingress-nginx-admission-patch-mx6rf    0/1     Completed   0          2d22h
+pod/ingress-nginx-controller-9rxrv         1/1     Running     0          2d22h
+pod/ingress-nginx-controller-vdsbl         1/1     Running     0          2d22h
 
 NAME                                         TYPE        CLUSTER-IP     EXTERNAL-IP   PORT(S)   AGE
-service/ingress-nginx-controller-admission   ClusterIP   10.49.72.138   <none>        443/TCP   8h
+service/ingress-nginx-controller-admission   ClusterIP   10.49.242.76   <none>        443/TCP   2d22h
 
 NAME                                      DESIRED   CURRENT   READY   UP-TO-DATE   AVAILABLE   NODE SELECTOR            AGE
-daemonset.apps/ingress-nginx-controller   2         2         2       2            2           kubernetes.io/os=linux   8h
+daemonset.apps/ingress-nginx-controller   2         2         2       2            2           kubernetes.io/os=linux   2d22h
 
 NAME                                       COMPLETIONS   DURATION   AGE
-job.batch/ingress-nginx-admission-create   1/1           71m        8h
-job.batch/ingress-nginx-admission-patch    1/1           71m        8h
+job.batch/ingress-nginx-admission-create   1/1           8s         2d22h
+job.batch/ingress-nginx-admission-patch    1/1           10s        2d22h
 ```
 
 Key things to look in the output are:
 
-* The ingress has been deployed as a DaemonSet to be run on each of the worker nodes, so you must have two of them running.
+* The ingress has been deployed as a DaemonSet to be run on each of the worker nodes, so you should have two of them running.
 * The ingress controller uses a service of type ClusterIP listening on port 443.
 
 Nginx ingress controller, by default, listens to all namespaces. Once an Ingress object is created in any namespace, it will create the necessary rules to forward the traffic. This default behaviour can be modified to limit ingress controller to a specific namespace.
 
 Currently we have not created any ingress resource yet. So if we try to access our lab instance on port 443 using our browser `https:\\<LabName>.lynx.tigera.ca`, we will get a 404 error from our ingress controller.
 
-
-
-### Deploy an updated yaobank manifest including ingress
-
-Let's check our modified yaobank application, which includes an ingress resource at the end of the manifest.
+3. Let's check our modified yaobank application, which includes an ingress resource at the end of the manifest.
 
 
 ```
