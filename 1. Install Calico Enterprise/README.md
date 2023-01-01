@@ -554,7 +554,7 @@ curl 10.0.1.20:30180
 
 In this section of the lab, we will configure the necessary resources to access the Calico Enterprise Manager UI.
 
-1. nginx ingress controller is already onfigured in the lab for you. Let's expose Calico Enterprise Manager UI service by creating the following Ingress resource. Before applying the following manifest, make sure to update the `host` name by replacing `<LABNAME>` with the name of your lab instance in both of the following Ingress resources.
+1. nginx ingress controller is already configured in the lab for you. Let's expose Calico Enterprise Manager UI service by creating the following Ingress resource. Before applying the following manifest, make sure to update the `host` name by replacing `<LABNAME>` with the name of your lab instance in both of the following Ingress resources.
 
 ```
 kubectl apply -f -<<EOF
