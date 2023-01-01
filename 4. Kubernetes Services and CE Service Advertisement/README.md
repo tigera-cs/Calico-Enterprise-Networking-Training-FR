@@ -523,6 +523,7 @@ curl 10.0.1.31:30180
 
 _______________________________________________________________________________________________________________________________________________________________________
 
+Kubernetes Ingress is an API object that provides routing rules to manage external users' access to the services in a Kubernetes cluster, typically via HTTPS/HTTP. With Ingress, you can easily set up rules for routing traffic without creating a bunch of Load Balancers or exposing each service on the node. [source](https://www.ibm.com/cloud/blog/kubernetes-ingress#:~:text=Kubernetes%20Ingress%20is%20an%20API,each%20service%20on%20the%20node.)
 
 ### Remove previous yaobank namespace
 
