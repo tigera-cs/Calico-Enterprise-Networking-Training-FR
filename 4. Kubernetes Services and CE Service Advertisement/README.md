@@ -606,7 +606,7 @@ yaobank   <none>   yaobank.cenetworking.lynx.tigera.ca   10.0.1.30,10.0.1.31   8
 
 3. Check the connectivity to the customer service `https:\\yaobank.<LabName>.lynx.tigera.ca` via your browser. 
 
-![yaobank](img/ingress-resource.PNG)
+![yaobank](img/yaobank-ingress-access.JPG)
 
 Note we do not use a NodePort service anymore for our customer application in this last manifest as now we use the ingress to access it.
 
