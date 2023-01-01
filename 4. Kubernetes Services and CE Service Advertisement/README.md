@@ -7,6 +7,7 @@ This lab provides the instructions to:
 * [Explore Kubernetes service NodePort iptables rules](https://github.com/Pooriya-a/CalicoEnterprise-Networking-Training/blob/main/4.%20Kubernetes%20Services%20and%20CE%20Service%20Advertisement/README.md#explore-kubernetes-service-nodeport-iptables-rules)
 * [Advertise the ServiceIP range using Calico Enterprise](https://github.com/Pooriya-a/CalicoEnterprise-Networking-Training/blob/main/4.%20Kubernetes%20Services%20and%20CE%20Service%20Advertisement/README.md#advertise-the-serviceip-range-using-calico-enterprise)
 * [Advertise services with `externalTrafficPolicy: Local`to preserve the source IP and avoid extra hop in routing](https://github.com/Pooriya-a/CalicoEnterprise-Networking-Training/blob/main/4.%20Kubernetes%20Services%20and%20CE%20Service%20Advertisement/README.md#advertise-services-with-externaltrafficpolicy-localto-preserve-the-source-ip-and-avoid-extra-hop-in-routing)
+* [Expose a service using Ingress resource]
 
 
 ## Overview
@@ -522,6 +523,8 @@ curl 10.0.1.31:30180
 ```
 
 _______________________________________________________________________________________________________________________________________________________________________
+
+### Expose a service using Ingress resource
 
 Kubernetes Ingress is an API object that provides routing rules to manage external users' access to the services in a Kubernetes cluster, typically via HTTPS/HTTP. With Ingress, you can easily set up rules for routing traffic without creating a bunch of Load Balancers or exposing each service on the node. [IBM Source](https://www.ibm.com/cloud/blog/kubernetes-ingress#:~:text=Kubernetes%20Ingress%20is%20an%20API,each%20service%20on%20the%20node.)
 
