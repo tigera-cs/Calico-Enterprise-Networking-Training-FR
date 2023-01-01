@@ -23,6 +23,7 @@ Calico can operate in two networking modes:
 * Overlay network is a network that is layered on top of another network. In the context of Kubernetes, an overlay network can be used to handle pod-to-pod traffic between nodes on top of an underlying network that is not aware of pod IP addresses. Calico supports two different overlay technologies: IPIP and VXLAN
 
 
+_______________________________________________________________________________________________________________________________________________________________________
 
 ### Examine pod network connectivity across cluster nodes using CE VXLAN mode
 
@@ -322,7 +323,7 @@ spec:
   vxlanMode: Never
 ```
 
-
+_______________________________________________________________________________________________________________________________________________________________________
 
 ### Configure an externally routable IPPool
 
@@ -367,6 +368,10 @@ pool2-ipv4-ippool     10.48.128.0/24   all()
 | 10.48.128.0/24| Calico - Seconday IPPool                                  |
 | 10.48.2.0/24  | Calico - External IPPool (externally routable)            |
 | 10.49.0.0/16  | Kubernetes Service Network (via kubeadm `--service-cidr`) |
+
+
+_______________________________________________________________________________________________________________________________________________________________________
+
 
 ### Configure Calico Enterprise BGP Peering to connect with an upsteam router outside the cluster
 
@@ -469,6 +474,9 @@ In a real-world on-prem deployment, you would typically configure Calico nodes w
 ```
 exit
 ```
+
+_______________________________________________________________________________________________________________________________________________________________________
+
 
 ### Configure a namespace to use an externally routable IP addresses
 
