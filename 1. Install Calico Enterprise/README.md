@@ -13,6 +13,8 @@ This lab provides the instructions to:
 Container Network Interface is an initiative from the Cloud-Native Computing Foundation. It is a set of interface standards that define how the container runtime engine (docker, cri-o, containerd, others) and the cni plugin work together to dynamically connect a pod to the network. Kubernetes defines the specification of the network model, but the actual implementation of the network model is abstracted from Kubernetes and Kubernetes uses the CNI for that. Upstream Kubernetes by default does not provide a network interface plugin. In this lab, we will walk through the process of installing Calico Enterprise as the CNI provider.
 
 
+_______________________________________________________________________________________________________________________________________________________________________
+
 ### Install Calico Enterprise
 
  In this lab environment, Kubernetes has been preinstalled, but as your network plugin is not installed yet, so your nodes will appear as NotReady. This section walks you through the required steps to install Calico Enteprise as both the CNI provider and network policy engine provider.
@@ -290,6 +292,9 @@ manager               True        False         False      11s
 monitor               True        False         False      53m
 ```
 
+_______________________________________________________________________________________________________________________________________________________________________
+
+
 ### Install Calico Enterprise command line utility "calicoctl"
 
 calicoctl is the Calico Enterprise specific command line utility that allows you to create, read, update, and delete Calico Enterprise objects from the command line. 
@@ -316,6 +321,8 @@ Cluster Calico Version:               v3.24.5
 Cluster Calico Enterprise Version:    v3.15.0
 Cluster Type:                         typha,kdd,k8s,operator,bgp,kubeadm
 ```
+
+_______________________________________________________________________________________________________________________________________________________________________
 
 ### Deploy a three-tier sample application called "yaobank" (Yet Another Online Bank)
 
@@ -553,6 +560,9 @@ curl 10.0.1.20:30180
   </body>
 </html>
 ```
+
+
+_______________________________________________________________________________________________________________________________________________________________________
 
 
 ### Access CE Manager UI using ingress
