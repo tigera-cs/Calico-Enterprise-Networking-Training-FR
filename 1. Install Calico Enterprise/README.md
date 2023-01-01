@@ -2,14 +2,22 @@
 
 This lab provides the instructions to:
 
+* [Overview](https://github.com/Pooriya-a/CalicoEnterprise-Networking-Training/blob/main/4.%20Kubernetes%20Services%20and%20CE%20Service%20Advertisement/README.md#overview)
 * [Install Calico Enterprise](https://github.com/Pooriya-a/CalicoEnterprise-Networking-Training/blob/main/1.%20Install%20Calico%20Enterprise/README.md#install-calico-enterprise)
 * [Install Calico Enterprise command line utility "calicoctl"](https://github.com/Pooriya-a/CalicoEnterprise-Networking-Training/blob/main/1.%20Install%20Calico%20Enterprise/README.md#install-calico-enterprise-command-line-utility-calicoctl)
 * [Deploy a three-tier sample application called "yaobank" (Yet Another Online Bank)](https://github.com/Pooriya-a/CalicoEnterprise-Networking-Training/blob/main/1.%20Install%20Calico%20Enterprise/README.md#deploy-a-three-tier-sample-application-called-yaobank-yet-another-online-bank)
 * [Access CE Manager UI using ingress](https://github.com/Pooriya-a/CalicoEnterprise-Networking-Training/blob/main/1.%20Install%20Calico%20Enterprise/README.md#access-ce-manager-ui-using-ingress)
 
+### Overview
+
+Container Network Interface is an initiative from the Cloud-Native Computing Foundation. It is a set of interface standards that define how the container runtime engine (docker, cri-o, containerd, others) and the cni plugin work together to dynamically connect a pod to the network. Kubernetes defines the specification of the network model, but the actual implementation of the network model is abstracted from Kubernetes and Kubernetes uses the CNI for that. Upstream Kubernetes by default does not provide a network interface plugin. In this lab, we will walk through the process of installing Calico Enterprise as the CNI provider.
 
 
-Before getting started, let's enable bash autocomplete for kubectl so that we can easier interact with kubectl.
+### Install Calico Enterprise
+
+ In this lab environment, Kubernetes has been preinstalled, but as your network plugin is not installed yet, so your nodes will appear as NotReady. This section walks you through the required steps to install Calico Enteprise as both the CNI provider and network policy engine provider.
+
+1. Before getting started, let's enable bash autocomplete for kubectl so that we can easier interact with kubectl.
 
 ```
 sudo apt-get install bash-completion
@@ -19,11 +27,7 @@ source ~/.bashrc
 
 ```
 
-### Install Calico Enterprise
-
-Upstream Kubernetes by default does not provide a network interface plugin. In this lab environment, Kubernetes has been preinstalled, but as your network plugin is not installed yet, your nodes will appear as NotReady. This section walks you through the required steps to install Calico Enteprise as both the CNI provider and network policy engine provider.
-
-1. To validate that the CNI plugin is not installed in this cluster, run the following command. All the cluster nodes' STATUS should appear as NotReady.
+2. To validate that the CNI plugin is not installed in this cluster, run the following command. All the cluster nodes' STATUS should appear as NotReady.
 
 ```
 kubectl get nodes
@@ -35,7 +39,7 @@ ip-10-0-1-30.eu-west-1.compute.internal   NotReady   <none>                 117s
 ip-10-0-1-31.eu-west-1.compute.internal   NotReady   <none>                 117s    v1.23.14
 ```
 
-2. Calico Enterprise uses ElasticSearch to store various logs such as flowlogs, DNS logs, and all others that it collects over the network. ElasticSearch requires persistent storage to store the data. This lab uses host path storage provisioner, which is not suitable for production enviroment and can result in scalability issues, instability, and data loss. 
+3. Calico Enterprise uses ElasticSearch to store various logs such as flowlogs, DNS logs, and all others that it collects over the network. ElasticSearch requires persistent storage to store the data. This lab uses host path storage provisioner, which is not suitable for production enviroment and can result in scalability issues, instability, and data loss. 
 
 ```
 kubectl apply -f - <<EOF
@@ -63,7 +67,7 @@ EOF
 
 ```
 
-3. Make sure the StorageClass has been created successfully.
+4. Make sure the StorageClass has been created successfully.
 
 ```
 kubectl get storageclass
@@ -73,11 +77,12 @@ NAME                   PROVISIONER                    RECLAIMPOLICY   VOLUMEBIND
 tigera-elasticsearch   kubernetes.io/no-provisioner   Delete          WaitForFirstConsumer   false                  25s
 ```
 
-4. The Tigera Operator is a Kubernetes operator and provides a well-defined API for how you install, configure, and run Calico Enterprise. Tigera operator also automates and controls the the lifecycle of a Calico Enterprise deployment. Tigera operator manifest configures the necessary resources such as custom resource definitions, namespaces, services accounts, clusterroles, etc so that cluster is ready to deploy other calico Enterprise components. Get yourself familiar with the content of the manifest and create it in the cluster.
+5. The Tigera Operator is a Kubernetes operator and provides a well-defined API for how you install, configure, and run Calico Enterprise. Tigera operator also automates and controls the the lifecycle of a Calico Enterprise deployment. Tigera operator manifest configures the necessary resources such as custom resource definitions, namespaces, services accounts, clusterroles, etc so that cluster is ready to deploy other calico Enterprise components. Get yourself familiar with the content of the manifest and create it in the cluster.
 
 ```
 kubectl create -f https://docs.tigera.io/manifests/tigera-operator.yaml
 ```
+
 6. Validate that the tigera-operator is running in the cluster. Note that the tigera-operator is running even though there is no CNI plugin deployed in the cluster. This is because tigera-operator is host networked meaning that it uses the host IP address to communicate over the network.
 
 ```
@@ -155,7 +160,7 @@ https://docs.tigera.io/reference/installation/api#operator.tigera.io/v1.Installa
 
 We have customized the installation resource for this lab. We have defined an IPPOOL with the CIDR 10.48.0.0/24. This must be within the range of the pod network CIDR when Kubernetes is bootstrapped. Here we are defining a smaller subnet within the available range as we will be creating additional pools for other purposes in subsequent labs.
 
-Run the following command to find the cluster-cidr (pod-network-cidr) that was used to bootstrap the cluster. You should have a similar output provided below.
+13. Run the following command to find the cluster-cidr (pod-network-cidr) that was used to bootstrap the cluster. You should have a similar output provided below.
 
 ```
 kubectl cluster-info dump | grep -m 2 -E "service-cluster-ip-range|cluster-cidr"
@@ -166,7 +171,7 @@ $ kubectl cluster-info dump | grep -m 2 -E "service-cluster-ip-range|cluster-cid
                             "--cluster-cidr=10.48.0.0/16"
 ```
 
-Now apply the following manifest, which will create the the Installation custom resource and enables the CNI functionality in the cluster.
+14. Now apply the following manifest, which will create the the Installation custom resource and enables the CNI functionality in the cluster.
 
 ```
 kubectl apply -f -<<EOF
@@ -196,7 +201,7 @@ EOF
 ```
 
 
-13.  Get yourself familiar with the resources in the following manifest and then install the Tigera custom resources.
+15.  Get yourself familiar with the resources in the following manifest and then install the Tigera custom resources.
 
   **Note:** We have already customized and deployed the Installation custom resource, which is also available in the following manifest. However, since there is no customization in the following manifest, there is no change in the Installation resource configuration. We will just receive a message tha the resource already exist.
 
@@ -204,7 +209,7 @@ EOF
 kubectl create -f https://docs.tigera.io/manifests/custom-resources.yaml
 ```
 
-14. Watch the status of various components progressing. We need to wait for at least one of the tigera-apiserver pods in the tigera-system namespace to be running before applying the tigera licensekey in the next step. The reasons is that the LicenseKey resource uses "projectcalico.org/v3" api, which is managed by the tigera apiserver.
+16. Watch the status of various components progressing. We need to wait for at least one of the tigera-apiserver pods in the tigera-system namespace to be running before applying the tigera licensekey in the next step. The reasons is that the LicenseKey resource uses "projectcalico.org/v3" api, which is managed by the tigera apiserver.
 
 ```
 watch kubectl get pods -A
@@ -260,13 +265,13 @@ manager                                         True
 monitor               True        False         False      7m53s
 ```
 
-15. Apply the LicenseKey to unblock enterprise features of Calico Enterprise.
+17. Apply the LicenseKey to unblock enterprise features of Calico Enterprise.
 
 ```
 kubectl create -f /home/tigera/license.yaml
 ```
 
-16. Watch the status of various components progressing. Ensure that all the components are AVAILABLE and there is no components in PROGRESSING or DEGRADED status before moving forward. This can take few minutes.
+18. Watch the status of various components progressing. Ensure that all the components are AVAILABLE and there is no components in PROGRESSING or DEGRADED status before moving forward. This can take few minutes.
 
 ```
 watch kubectl get tigerastatus
