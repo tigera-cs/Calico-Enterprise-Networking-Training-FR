@@ -20,13 +20,6 @@ After finshing this lab, you should gain a good understanding of Kubernetes serv
 
 There are four types of Kubernetes services. ClusterIP, NodePort, LoadBalancer, and ExternalName. kube-proxy implements services in Kubernetes and expose them to the network internally or externally. In this section, we will explore how kube-proxy uses iptables to implement Kubernetes service `ClusterIP`.
 
-In this lab, you will:
-
-
-
-
-### Examine kubernetes services
-
 1. kube-proxy is the Kubernetes service agent that is responsible to implement Kubernetes services definitions in a Kubernetes environment. We will run this lab from `worker1` so we can explore the iptables rules that kube-proxy has set up. Run the following command to ssh into `worker1`.
 
 ```
