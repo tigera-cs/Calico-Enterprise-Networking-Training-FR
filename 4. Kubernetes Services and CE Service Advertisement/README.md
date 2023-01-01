@@ -6,7 +6,7 @@ This lab provides the instructions to:
 * [Explore Kubernetes service ClusterIP iptables rules](https://github.com/Pooriya-a/CalicoEnterprise-Networking-Training/blob/main/4.%20Kubernetes%20Services%20and%20CE%20Service%20Advertisement/README.md#explore-kubernetes-service-clusterip-iptables-rules)
 * [Explore Kubernetes service NodePort iptables rules](https://github.com/Pooriya-a/CalicoEnterprise-Networking-Training/blob/main/4.%20Kubernetes%20Services%20and%20CE%20Service%20Advertisement/README.md#explore-kubernetes-service-nodeport-iptables-rules)
 * [Advertise the ServiceIP range using Calico Enterprise](https://github.com/Pooriya-a/CalicoEnterprise-Networking-Training/blob/main/4.%20Kubernetes%20Services%20and%20CE%20Service%20Advertisement/README.md#advertise-the-serviceip-range-using-calico-enterprise)
-* [Advertise services with `externalTrafficPolicy: Local`to preserve the source IP and avoid extra hop in routing](https://github.com/Pooriya-a/CalicoEnterprise-Networking-Training/blob/main/4.%20Kubernetes%20Services%20and%20CE%20Service%20Advertisement/README.md#use-externaltrafficpolicy-localto-preserve-the-source-ip-and-avoid-extra-hop-in-routing)
+* [Advertise services with `externalTrafficPolicy: Local`to preserve the source IP and avoid extra hop in routing](https://github.com/Pooriya-a/CalicoEnterprise-Networking-Training/blob/main/4.%20Kubernetes%20Services%20and%20CE%20Service%20Advertisement/README.md#advertise-services-with-externaltrafficpolicy-localto-preserve-the-source-ip-and-avoid-extra-hop-in-routing)
 
 
 ## Overview
