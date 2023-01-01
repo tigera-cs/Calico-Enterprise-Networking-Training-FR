@@ -593,7 +593,7 @@ EOF
 
 ```
 
-Verify that the ingress resource has been successfully deployed.
+3. Verify that the ingress resource has been successfully deployed.
 
 ```
 kubectl get ingress -n yaobank
@@ -604,7 +604,7 @@ NAME      CLASS    HOSTS                                 ADDRESS               P
 yaobank   <none>   yaobank.cenetworking.lynx.tigera.ca   10.0.1.30,10.0.1.31   80      36s
 ```
 
-3. Check the connectivity to the customer service `https:\\yaobank.<LabName>.lynx.tigera.ca` via your browser. 
+4. Check the connectivity to the customer service `https:\\yaobank.<LabName>.lynx.tigera.ca` via your browser. 
 
 ![yaobank](img/yaobank-ingress-access.JPG)
 
