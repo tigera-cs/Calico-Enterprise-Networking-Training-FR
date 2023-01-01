@@ -277,10 +277,9 @@ In summary, for a packet being sent to a NodePort:
 
 ### Advertise the ServiceIP range using Calico Enterprise
 
-Advertising services over BGP allows you to directly access the service without using NodePorts or a cluster Ingress Controller.
+Calico Enterprise BGP service advertisement allows you to directly access the service without using a NodePorts or LoadBalancer service or a cluster Ingress Controller.
 
-
-Before we begin, let's take a look at the state of routes on the bastion node.
+1. let's by taking look at the state of routes on the bastion node. If you completed the previous lab correctly, you should see one route that was learned from Calico that provides access to the nginx pod that was created in the externally routable namespace (the route ending in `proto bird` in this example output). In this lab we will advertise Kubernetes services (rather than individual pods) over BGP.
 
 ```
 ip route
@@ -290,21 +289,22 @@ ip route
 default via 10.0.1.1 dev ens5 proto dhcp src 10.0.1.10 metric 100 
 10.0.1.0/24 dev ens5 proto kernel scope link src 10.0.1.10 
 10.0.1.1 dev ens5 proto dhcp scope link src 10.0.1.10 metric 100 
-10.48.2.216/29 via 10.0.1.31 dev ens5 proto bird 
+10.48.2.216/29 via 10.0.1.31 dev ens5 proto bird
 ```
 
-If you completed the previous lab correctly, you should see one route that was learned from Calico that provides access to the nginx pod that was created in the externally routable namespace (the route ending in `proto bird` in this example output). In this lab we will advertise Kubernetes services (rather than individual pods) over BGP.
+2. Run the following and command and ensure that there is no bgpconfigurations in your cluster.
 
-
-A BGP configuration resource (BGPConfiguration) represents BGP specific configuration options for the cluster or a specific node. The resource with the name default has a specific meaning and contains the BGP global default configuration. By the default, there is no BGPConfiguration resource deployed in the cluster. However, Once BGP is activated, Calico has default built-in configurations for BGP in its data model. For example, it use 64512 as the default AS number.
-
-Run the following and command and ensure that there is no bgpconfigurations in your cluster.
+**Note:** A BGP configuration resource (BGPConfiguration) represents BGP specific configuration options for the cluster or a specific node. The resource with the name default has a specific meaning and contains the BGP global default configuration. By the default, there is no BGPConfiguration resource deployed in the cluster. However, Once BGP is activated, Calico has default built-in configurations for BGP in its data model. For example, it use 64512 as the default AS number.
 
 ```
 kubectl get bgpconfigurations
 ```
+You should receive the following output.
+```
+No resources found
+```
 
-Examine the following default BGP configuration and then apply it.
+3. Examine the following default BGP configuration and then apply it.
 
 ```
 kubectl apply -f -<<EOF
@@ -321,7 +321,7 @@ EOF
 The `serviceClusterIPs` parameter tells Calico to advertise the cluster IP range.
 
 
-Verify the BGPConfiguration just implemented.
+4. Verify the BGPConfiguration just implemented.
 
 ```
 kubectl get bgpconfigurations default -o yaml
@@ -334,16 +334,16 @@ metadata:
   annotations:
     kubectl.kubernetes.io/last-applied-configuration: |
       {"apiVersion":"projectcalico.org/v3","kind":"BGPConfiguration","metadata":{"annotations":{},"name":"default"},"spec":{"serviceClusterIPs":[{"cidr":"10.49.0.0/16"}]}}
-  creationTimestamp: "2022-07-10T00:00:10Z"
+  creationTimestamp: "2023-01-01T20:50:02Z"
   name: default
-  resourceVersion: "64830"
-  uid: 8dd4b681-84fe-4f39-b7e4-3f8384cb8ad0
+  resourceVersion: "777183"
+  uid: 491661bb-d525-44c1-89a9-f4562f614232
 spec:
   serviceClusterIPs:
   - cidr: 10.49.0.0/16
 ```
 
-Now that we have enabled Service ClusterIP advertisement, let's examine the routes on bastion node again.
+5. Now that we have enabled Service ClusterIP advertisement, let's examine the routes on bastion node again.
 
 ```
 ip route
@@ -357,29 +357,29 @@ default via 10.0.1.1 dev ens5 proto dhcp src 10.0.1.10 metric 100
 10.49.0.0/16 proto bird 
         nexthop via 10.0.1.20 dev ens5 weight 1 
         nexthop via 10.0.1.30 dev ens5 weight 1 
-        nexthop via 10.0.1.31 dev ens5 weight 1 
+        nexthop via 10.0.1.31 dev ens5 weight 1
 ```
 
 You should now see the cluster service cidr `10.49.0.0/16` advertised from each of the kubernetes cluster nodes. This means that traffic to any service's cluster IP address will get load-balanced across all nodes in the cluster by the network using ECMP (Equal Cost Multi Path). Kube-proxy then load balances the cluster IP across the service endpoints (backing pods) in exactly the same way as if a pod had accessed a service via a cluster IP from within the cluster.
 
 
-Let's verify connectivity through the clusterIP. Find the cluster IP for the `customer` service.
+6. Let's verify connectivity through the clusterIP. Find the cluster IP for the `customer` service.
 
 ```
 kubectl get svc -n yaobank customer
 ```
 
 ```
-NAME       TYPE       CLUSTER-IP      EXTERNAL-IP   PORT(S)        AGE
-customer   NodePort   10.49.206.189   <none>        80:30180/TCP   119m
+NAME       TYPE       CLUSTER-IP    EXTERNAL-IP   PORT(S)        AGE
+customer   NodePort   10.49.60.52   <none>        80:30180/TCP   2d3h
 ```
 
-In this case, the ClusterIP is `10.49.206.189`. Your IP may be different.
+In this case, the ClusterIP is `10.49.60.52`. Your IP may be different.
 
-Confirm you can access it from the bastion host.
+7. Confirm you can access it from the bastion host.
 
 ```
-curl 10.49.206.189
+curl 10.49.60.52
 ```
 
 ```
@@ -407,5 +407,5 @@ curl 10.49.206.189
         <h2>Balance: 2389.45</h2>
         <p><a href="/logout">Log Out >></a></p>
   </body>
-</html
+</html>
 ```
