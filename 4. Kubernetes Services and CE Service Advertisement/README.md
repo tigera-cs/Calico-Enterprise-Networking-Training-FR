@@ -18,7 +18,7 @@ After finshing this lab, you should gain a good understanding of Kubernetes serv
 
 ### Explore Kubernetes service ClusterIP iptables rules
 
-There are four types of Kubernetes services. ClusterIP, NodePort, LoadBalancer, and ExternalName. kube-proxy is the Kubernetes service agent that is responsible for implementing Kubernetes services definitions in a Kubernetes environment. In this section, we will explore how kube-proxy uses iptables to implement Kubernetes service `ClusterIP`.
+There are four types of Kubernetes services. ClusterIP, NodePort, LoadBalancer, and ExternalName. kube-proxy is the Kubernetes service agent that is responsible for implementing Kubernetes services definitions in a Kubernetes environment. In this section, we will explore how kube-proxy uses iptables to implement Kubernetes service `ClusterIP`. `ClusterIP` service is the default service type and is used to expose a service on an IP address that is internal to the cluster.
 
 1. We will run this lab from `worker1` so we can explore the iptables rules that kube-proxy has set up. Run the following command to ssh into `worker1`.
 
@@ -188,35 +188,34 @@ In summary, for a packet being sent to a clusterIP:
 
 ### Explore Kubernetes service NodePort iptables rules
 
-Let's explore the iptables rules that implement the `customer` service.
+`NodePort` service enables us to expose a service outside the cluster using a static port on the cluster nodes. To reach a NodePort service from outside the cluster, we just need to use any of the cluster nodes IP addresses along with a port on the node. The default port range for NodePort is 30000-32767, but this range can be changed or extended through the kube-apiserver configuration.
 
-Find the service endpoints for `customer` `NodePort` service.
+1. Let's explore the iptables rules that implement the `customer` service. Find the service endpoints for `customer` `NodePort` service. Keeping using `worker1` to follow the instructions.
+
 ```
 kubectl get endpoints -n yaobank customer
 ```
 
 ```
-NAME       ENDPOINTS      AGE
-customer   10.48.0.8:80   42m
+NAME       ENDPOINTS       AGE
+customer   10.48.0.43:80   2d2h
 ```
 
-The `customer` service has one endpoint (`10.48.0.8` on port `80` in this example output). Starting from the `KUBE-SERVICES` iptables chain, we will traverse each chain until you get to the rule directing traffic to this endpoint IP address.
+2. The `customer` service has one endpoint (`10.48.0.43` on port `80` in this example output). Starting from the `KUBE-SERVICES` iptables chain, we will traverse each chain until you get to the rule directing traffic to this endpoint IP address.
 
-#### KUBE-SERVICES -> KUBE-NODEPORTS
-
-The `KUBE-SERVICE` chain handles the matching for service types `ClusterIP` and `LoadBalancer`. At the end of `KUBE-SERVICE` chain, another custom chain `KUBE-NODEPORTS` will handle traffic for service type `NodePort`.
+**Note:** The `KUBE-SERVICE` chain handles the matching for service types `ClusterIP` and `LoadBalancer`. At the end of `KUBE-SERVICE` chain, another custom chain `KUBE-NODEPORTS` will handle traffic for service type `NodePort`.
 
 ```
 sudo iptables -v --numeric --table nat --list KUBE-SERVICES | grep KUBE-NODEPORTS | column -t
 ```
 
 ```
-2448  147K  KUBE-NODEPORTS  all  --  *  *  0.0.0.0/0  0.0.0.0/0  /*  kubernetes  service  nodeports;  NOTE:  this  must  be  the  last  rule  in  this  chain  */  ADDRTYPE  match  dst-type  LOCAL
+80  4836  KUBE-NODEPORTS  all  --  *  *  0.0.0.0/0  0.0.0.0/0  /*  kubernetes  service  nodeports;  NOTE:  this  must  be  the  last  rule  in  this  chain  */  ADDRTYPE  match  dst-type  LOCAL
 ```
 
-`match dst-type LOCAL` matches any packet with a local host IP as the destination. i.e. any address that is assigned to one of the host's interfaces.
+3. `match dst-type LOCAL` matches any packet with a local host IP as the destination. i.e. any address that is assigned to one of the host's interfaces.
 
-#### KUBE-NODEPORTS -> KUBE-SVC-XXXXXXXXXXXXXXXX
+4. Now let's look more closely at the rules for the `customer` service.
 
 ```
 sudo iptables -v --numeric --table nat --list KUBE-NODEPORTS | column -t
@@ -225,14 +224,14 @@ sudo iptables -v --numeric --table nat --list KUBE-NODEPORTS | column -t
 ```
 Chain  KUBE-NODEPORTS  (1                         references)
 pkts   bytes           target                     prot         opt  in  out  source     destination
-0      0               KUBE-MARK-MASQ             tcp          --   *   *    0.0.0.0/0  0.0.0.0/0    /*  yaobank/customer:http  */  tcp  dpt:30180
 0      0               KUBE-SVC-PX5FENG4GZJTCELT  tcp          --   *   *    0.0.0.0/0  0.0.0.0/0    /*  yaobank/customer:http  */  tcp  dpt:30180
 ```
 
-The second rule directs traffic destined for the `customer` service to the chain that load balances the service (KUBE-SVC-PX5FENG4GZJTCELT). `tcp dpt:30180` matches any packet with the destination port of tcp 30180 (the node port of the `customer` service).
+The rule above directs traffic destined for the `customer` service to the chain that load balances the service (KUBE-SVC-PX5FENG4GZJTCELT). `tcp dpt:30180` matches any packet with the destination port of tcp 30180 (the node port of the `customer` service).
 
-#### KUBE-SVC-XXXXXXXXXXXXXXXX -> KUBE-SEP-XXXXXXXXXXXXXXXX
-(Remember your chain name may be different than this example.)
+5. `kube-proxy` in `iptables` mode uses an equal probability algorithm to load balance traffic between pods.  We currently have one `customer` pod.
+
+Let's examine how this loadbalancing works among the Kubernetes service endpoints. (Remember your chain name may be different than this example.)
 
 ```
 sudo iptables -v --numeric --table nat --list KUBE-SVC-PX5FENG4GZJTCELT | column -t
@@ -240,31 +239,30 @@ sudo iptables -v --numeric --table nat --list KUBE-SVC-PX5FENG4GZJTCELT | column
 
 ```
 Chain  KUBE-SVC-PX5FENG4GZJTCELT  (2                         references)
-pkts   bytes                      target                     prot         opt  in  out  source     destination
-0      0                          KUBE-SEP-M7DMW2CXWLD73RC3  all          --   *   *    0.0.0.0/0  0.0.0.0/0    /*  yaobank/customer:http  */
+pkts   bytes                      target                     prot         opt  in  out  source         destination
+0      0                          KUBE-MARK-MASQ             tcp          --   *   *    !10.48.0.0/16  10.49.60.52  /*  yaobank/customer:http  cluster  IP   */         tcp  dpt:80
+0      0                          KUBE-MARK-MASQ             tcp          --   *   *    0.0.0.0/0      0.0.0.0/0    /*  yaobank/customer:http  */       tcp  dpt:30180
+0      0                          KUBE-SEP-GNFCEQXJBZQ2TQAR  all          --   *   *    0.0.0.0/0      0.0.0.0/0    /*  yaobank/customer:http  */
 ```
 
-As we only have a single backing pod for the `customer` service, there is no loadbalancing to do, so there is a single rule that directs all traffic to the chain that delivers the packet to the service endpoint (KUBE-SEP-XXXXXXXXXXXXXXXX).
+As we only have a single backing pod for the `customer` service, there is no loadbalancing to do, so there is a single rule (last rule) that directs all traffic to the chain that delivers the packet to the service endpoint (KUBE-SEP-XXXXXXXXXXXXXXXX).
 
-#### KUBE-SEP-XXXXXXXXXXXXXXXX -> `customer` endpoint
-(Remember your chain name may be different than this example.)
-
-```
-sudo iptables -v --numeric --table nat --list KUBE-SEP-M7DMW2CXWLD73RC3 | column -t
-```
+6. Finally, lets' look into the KUBE-SEP-XXXXXXXXXXXXXXXX to `customer` endpoint. This rule delivers the packet to the `customer` service endpoint.
 
 ```
-Chain  KUBE-SEP-M7DMW2CXWLD73RC3  (1              references)
-pkts   bytes                      target          prot         opt  in  out  source     destination
-0      0                          KUBE-MARK-MASQ  all          --   *   *    10.48.0.8  0.0.0.0/0    /*  yaobank/customer:http  */
-0      0                          DNAT            tcp          --   *   *    0.0.0.0/0  0.0.0.0/0    /*  yaobank/customer:http  */  tcp  to:10.48.0.8:80
+sudo iptables -v --numeric --table nat --list KUBE-SEP-GNFCEQXJBZQ2TQAR | column -t
 ```
 
-This rule delivers the packet to the `customer` service endpoint.
+```
+Chain  KUBE-SEP-GNFCEQXJBZQ2TQAR  (1              references)
+pkts   bytes                      target          prot         opt  in  out  source      destination
+0      0                          KUBE-MARK-MASQ  all          --   *   *    10.48.0.43  0.0.0.0/0    /*  yaobank/customer:http  */
+0      0                          DNAT            tcp          --   *   *    0.0.0.0/0   0.0.0.0/0    /*  yaobank/customer:http  */  tcp  to:10.48.0.43:80
+```
 
-The second rule performs the DNAT that changes the destination IP from the service's NodePort to the IP address of the service endpoint backing pod (`10.48.0.8` in this example). After this, standard Linux routing can handle forwarding the packet like it would for any other packet.
+The second rule performs the DNAT that changes the destination IP from the service's NodePort to the IP address of the service endpoint backing pod (`10.48.0.43` in this example). After this, standard Linux routing can handle forwarding the packet like it would for any other packet.
 
-#### Recap
+**Recap**
 
 You've just traced the kube-proxy iptables rules used to load balance traffic to `customer` pods exposed as a service of type `NodePort`.
 
@@ -275,5 +273,4 @@ In summary, for a packet being sent to a NodePort:
 * The KUBE-SVC-XXXXXXXXXXXXXXXX chain load balances the packet to a random service endpoint KUBE-SEP-XXXXXXXXXXXXXXXX chain.
 * The KUBE-SEP-XXXXXXXXXXXXXXXX chain DNATs the packet so it will get routed to the service endpoint (backing pod).
 
-> __Congratulations! You have completed this la and you have by now a basic understanding of kubernetes services.__
 
