@@ -814,5 +814,5 @@ summary    ClusterIP   10.49.102.204   <none>        80/TCP     22m
 kubectl delete namespace yaobank
 ```
 
-> Congratulations! You have successfully completed your k8s services training module.
+> **Congratulations! You have completed `4. Kubernetes Services and CE Service Advertisement` lab.**
 
