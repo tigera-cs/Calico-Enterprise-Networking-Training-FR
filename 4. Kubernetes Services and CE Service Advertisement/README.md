@@ -3,8 +3,8 @@
 This lab provides the instructions to:
 
 * [Overview](https://github.com/Pooriya-a/CalicoEnterprise-Networking-Training/blob/main/4.%20Kubernetes%20Services%20and%20CE%20Service%20Advertisement/README.md#overview)
-* [Examine pod network connectivity across cluster nodes using CE VXLAN mode](https://github.com/Pooriya-a/CalicoEnterprise-Networking-Training/blob/main/3.%20Cross%20Node%20Connectivity/README.md#examine-pod-network-connectivity-across-cluster-nodes-using-ce-vxlan-mode)
-* [Configure an externally routable IPPool](https://github.com/Pooriya-a/CalicoEnterprise-Networking-Training/blob/main/3.%20Cross%20Node%20Connectivity/README.md#configure-an-externally-routable-ippool)
+* [Explore Kubernetes service ClusterIP iptables rules](https://github.com/Pooriya-a/CalicoEnterprise-Networking-Training/blob/main/4.%20Kubernetes%20Services%20and%20CE%20Service%20Advertisement/README.md#explore-kubernetes-service-clusterip-iptables-rules)
+* [Explore Kubernetes service NodePort iptables rules](https://github.com/Pooriya-a/CalicoEnterprise-Networking-Training/blob/main/3.%20Cross%20Node%20Connectivity/README.md#configure-an-externally-routable-ippool)
 * [Configure Calico Enterprise BGP Peering to connect with an upsteam router outside the cluster](https://github.com/Pooriya-a/CalicoEnterprise-Networking-Training/blob/main/3.%20Cross%20Node%20Connectivity/README.md#configure-calico-enterprise-bgp-peering-to-connect-with-an-upsteam-router-outside-the-cluster)
 * [Configure a namespace to use an externally routable IP addresses](https://github.com/Pooriya-a/CalicoEnterprise-Networking-Training/blob/main/3.%20Cross%20Node%20Connectivity/README.md#configure-a-namespace-to-use-an-externally-routable-ip-addresses)
 
