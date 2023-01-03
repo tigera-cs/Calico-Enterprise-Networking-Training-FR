@@ -244,12 +244,12 @@ sudo birdc show protocols
 ```
 BIRD 1.6.8 ready.
 name     proto    table    state  since       info
-direct1  Direct   master   up     08:15:34    
-kernel1  Kernel   master   up     08:15:34    
-device1  Device   master   up     08:15:34    
-control1 BGP      master   up     13:24:20    Established   
-worker1  BGP      master   up     13:24:20    Established   
-worker2  BGP      master   up     13:24:20    Established   
+direct1  Direct   master   up     23:42:33    
+kernel1  Kernel   master   up     23:42:33    
+device1  Device   master   up     23:42:33    
+control1 BGP      master   up     23:42:35    Established   
+worker1  BGP      master   up     23:42:36    Established   
+worker2  BGP      master   up     23:42:35    Established
 ```
 
 13. Check the routes on the bastion node. You should see that the edge gateway pod is reachable through the worker node where it has been deployed:
@@ -258,16 +258,14 @@ worker2  BGP      master   up     13:24:20    Established
 ip route
 ```
 ```
-tigera@bastion:/var/run/bird$ ip route
 default via 10.0.1.1 dev ens5 proto dhcp src 10.0.1.10 metric 100 
 10.0.1.0/24 dev ens5 proto kernel scope link src 10.0.1.10 
 10.0.1.1 dev ens5 proto dhcp scope link src 10.0.1.10 metric 100 
+10.10.10.0/31 via 10.0.1.31 dev ens5 proto bird 
+10.48.2.216/29 via 10.0.1.31 dev ens5 proto bird 
 10.49.0.0/16 proto bird 
         nexthop via 10.0.1.20 dev ens5 weight 1 
-        nexthop via 10.0.1.30 dev ens5 weight 1 
-        nexthop via 10.0.1.31 dev ens5 weight 1 
-10.50.0.0/31 via 10.0.1.31 dev ens5 proto bird 
-10.50.0.1 via 10.0.1.30 dev ens5 proto bird 
+        nexthop via 10.0.1.31 dev ens5 weight 1
 ```
 
 ## 8.4. Verification
