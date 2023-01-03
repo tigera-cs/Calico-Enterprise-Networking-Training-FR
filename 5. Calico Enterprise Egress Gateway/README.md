@@ -53,7 +53,7 @@ spec:
 EOF
 ```
 
-4. Let's create a namespace called and application, which will be using egress gateway to connect to resources outside the cluster.
+4. Let's create a namespace and application, which will be using egress gateway to connect to resources outside the cluster.
 
 ```
 kubectl apply -f -<<EOF
