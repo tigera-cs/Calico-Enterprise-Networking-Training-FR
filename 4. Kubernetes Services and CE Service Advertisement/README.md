@@ -794,7 +794,7 @@ yaobank   <none>   yaobank.cenetworking.lynx.tigera.ca   10.0.1.30,10.0.1.31   8
 
 7. Check the connectivity to the customer service `https:\\yaobank.<LabName>.lynx.tigera.ca` via your browser. 
 
-![yaobank](img/yaobank-ingress-access.JPG)
+![yaobank](img/1.yaobank-ingress-access.JPG)
 
 8. Note we do not use a NodePort service anymore for our customer application in this last manifest as now we use the ingress to access it.
 
@@ -858,6 +858,11 @@ cut -f1 -d " " /proc/modules | grep -e ip_vs -e nf_conntrack
 ```
 kubectl -n kube-system edit cm kube-proxy
 ```
+
+Below is a sample configuration.
+
+![kube-proxy-configmap](img/2.kube-proxy-ipvs-mode.JPG)
+
 
 2. Delete all the active proxy pods
 
