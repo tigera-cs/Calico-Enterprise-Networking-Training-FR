@@ -48,7 +48,7 @@ metadata:
   name: egress-ippool-1
 spec:
   cidr: 10.10.10.0/31
-  blockSize: 31
+  blockSize: 32
   nodeSelector: "!all()"
 EOF
 
