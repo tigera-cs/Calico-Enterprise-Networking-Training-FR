@@ -122,7 +122,9 @@ kubectl create secret generic egress-pull-secret --from-file=.dockerconfigjson=/
 
 ```
 
-7. Deploy the Egress gateway with the desired label to be used as selector by namespace and app workloads using this Egress Gateway. In this example, the label we are using is `egress-code: red`. Please also note the IPPool assigned to this Egress Gateway. In the `cni.projectcalico.org/ipv4pools` annotation, the IPPool can be specified either by its name (e.g. egress-ippool-1) or by its CIDR (e.g. 10.58.0.0/31).
+7. Deploy the Egress gateway with the desired label to be used as selector by namespace and app workloads using this Egress Gateway. Browse to the following link, copy the egress-gateway deployment, and make sure the following configurations are set. 
+**Note:** The following manifest is just provided below as a reference to the valudate that needs to be verified. Since Tigera continously updates this manifest with the new features and configurations paramters, this manifest should be downloads from the Tigera docs site.
+
 
 
 ```
@@ -133,7 +135,7 @@ metadata:
   name: egress-gateway
   namespace: default
   labels:
-    egress-code: red
+  **egress-code: red** 
 spec:
   replicas: 1
   selector:
@@ -154,72 +156,6 @@ spec:
       - name: egress-gateway-init
         command: ["/init-gateway.sh"]
         image: quay.io/tigera/egress-gateway:v3.15.0
-        env:
-        # Use downward API to tell the pod its own IP address.
-        - name: EGRESS_POD_IP
-          valueFrom:
-            fieldRef:
-              fieldPath: status.podIP
-        securityContext:
-          privileged: true
-      containers:
-      - name: egress-gateway
-        command: ["/start-gateway.sh"]
-        image: quay.io/tigera/egress-gateway:v3.15.0
-        env:
-        # Optional: comma-delimited list of IP addresses to send ICMP pings to; if all probes fail, the egress
-        # gateway will report non-ready.
-        - name: ICMP_PROBE_IPS
-          value: ""
-        # Only used if ICMP_PROBE_IPS is non-empty: interval to send probes.
-        - name: ICMP_PROBE_INTERVAL
-          value: "5s"
-        # Only used if ICMP_PROBE_IPS is non-empty: timeout before reporting non-ready if there are no successful 
-        # ICMP probes.
-        - name: ICMP_PROBE_TIMEOUT
-          value: "15s"
-        # Optional comma-delimited list of HTTP URLs to send periodic probes to; if all probes fail, the egress
-        # gateway will report non-ready.
-        - name: HTTP_PROBE_URLS
-          value: ""
-        # Only used if HTTP_PROBE_URL is non-empty: interval to send probes.
-        - name: HTTP_PROBE_INTERVAL
-          value: "10s"
-        # Only used if HTTP_PROBE_URL is non-empty: timeout before reporting non-ready if there are no successful 
-        # HTTP probes.
-        - name: HTTP_PROBE_TIMEOUT
-          value: "30s"
-        # Port that the egress gateway serves its health reports.  Must match the readiness probe and health
-        # port defined below.
-        - name: HEALTH_PORT
-          value: "8080"
-        - name: EGRESS_POD_IP
-          valueFrom:
-            fieldRef:
-              fieldPath: status.podIP
-        securityContext:
-          capabilities:
-            add:
-            - NET_ADMIN
-        volumeMounts:
-        - mountPath: /var/run
-          name: policysync
-        ports:
-        - name: health
-          containerPort: 8080
-        readinessProbe:
-          httpGet:
-            path: /readiness
-            port: 8080
-          initialDelaySeconds: 3
-          periodSeconds: 3
-      terminationGracePeriodSeconds: 0
-      volumes:
-      - csi:
-          driver: csi.tigera.io
-        name: policysync
-EOF
-
 ```
 
 ## 8.2.2. Connect the namespace to the gateways it should use
