@@ -122,12 +122,16 @@ kubectl create secret generic egress-pull-secret --from-file=.dockerconfigjson=/
 
 ```
 
-7. Deploy the Egress gateway by browsing to the following link, copy the egress-gateway deployment, and deploy it in the cluster. Make sure the version of egress-gate images matches the Calico Enterprise version deployed in the cluster.
+7. Deploy the Egress gateway by browsing to the following link, copy the egress-gateway deployment, and deploy it in the cluster. Make sure the version of egress-gateway image matches the Calico Enterprise version deployed in the cluster.
 
 https://docs.tigera.io/networking/egress/egress-gateway-on-prem#deploy-a-group-of-egress-gateways 
 
 **Note:** Since Tigera continously updates this manifest with the new features and configurations paramters, this manifest should be downloads from the Tigera docs site. Following is a sample manifest from the docs site.
 
+Note the following configurations:
+
+* `egress-code: red` is the lable that we will use to annotate the egress gateway client pod or namespace to use the egress gateway as it egress proxy.
+* `cni.projectcalico.org/ipv4pools: "[\"10.10.10.0/31\"]"` is the IPPool that was deployed to provide IP address to egress gateway pods. 
 
 
 ```
