@@ -1082,7 +1082,17 @@ TCP  10.49.102.204:80                    0        0        0        0        0
 TCP  10.49.105.153:9093                  0        0        0        0        0
 ```
 
-16. 
+16. Clean up the bgpconfiguration and bgppeer resource previously configured.
+
+```
+kubectl delete bgpconfigurations default
+
+```
+```
+kubectl delete bgppeers bgppeer-global-64512
+
+```
+
 
 
 > **Congratulations! You have completed `4. Kubernetes Services and CE Service Advertisement` lab.**
