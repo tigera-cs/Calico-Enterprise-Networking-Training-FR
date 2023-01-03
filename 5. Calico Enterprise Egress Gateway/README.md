@@ -15,9 +15,7 @@ After finshing this lab, you should gain a good understanding of how to deploy C
 
 ______________________________________________________________________________________________________________________________________________________________________
 
-### Explore Kubernetes service ClusterIP iptables rules
-
-
+### 
 
 The purpose of this lab is to demonstrate the funciationality of Egress Gateway. In this lab, we will:
 
