@@ -24,18 +24,21 @@ The purpose of this lab is to demonstrate the funciationality of Egress Gateway.
 8.3. Enable BGP with upstream routers (Bird) and advertise the Egress Gateway IP Pool \
 8.4. Test and Verify the communication
 
-## 8.1. Enable egress gateway support on a per-namespace basis
 
-Patch felix configuration to support per namespace egress gateway support
+1. Enable egress gateway support by patching FelixConfiguration to support egress gateway both per namespace and per pod.
 
 ```
-kubectl patch felixconfiguration.p default --type='merge' -p \
-    '{"spec":{"egressIPSupport":"EnabledPerNamespace"}}'
+kubectl patch felixconfiguration.p default --type='merge' -p '{"spec":{"egressIPSupport":"EnabledPerNamespaceOrPerPod"}}'
+    
+```
+2. Egress gateways require the policy sync API to be enabled on Felix to implement symmetric routing. Run the following command to enable this configuration cluster-wide.
+
+```
+kubectl patch felixconfiguration.p default --type='merge' -p '{"spec":{"policySyncPathPrefix":"/var/run/nodeagent"}}'
+    
 ```
 
-## 8.1.1. Create IPPool
-
-Create an IP Pool for Egress Gateway Pod
+3. Egress gateways use the IPPool resource for a particular application when it connects outside of the cluster. Run the following command to create the egress gateway IPPool.
 
 ```
 kubectl apply -f -<<EOF
@@ -45,19 +48,71 @@ metadata:
   name: egress-ippool-1
 spec:
   cidr: 10.50.0.0/31
-  blockSize: 31
+  blockSize: 32
   nodeSelector: "!all()"
 EOF
 ```
 
-## 8.1.2. Apply Calico Enterprise pull secret to egress gateway namespace:
-
-Create a pull secret into egress gateway namespace
+4. Let's create a namespace called and application, which will be using egress gateway to connect to resources outside the cluster.
 
 ```
-kubectl create secret generic egress-pull-secret \
-  --from-file=.dockerconfigjson=/home/tigera/config.json \
-  --type=kubernetes.io/dockerconfigjson -n app1
+kubectl apply -f -<<EOF
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: app1
+  labels:
+    tenant: tenant1
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: app1-deployment
+  namespace: app1
+  labels:
+    app: app1
+    tenant: tenant1
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: app1
+      tenant: tenant1
+  template:
+    metadata:
+      labels:
+        app: app1
+        tenant: tenant1
+    spec:
+      containers:
+      - name: app1
+        image: praqma/network-multitool
+        env:
+        - name: HTTP_PORT
+          value: "1180"
+        - name: HTTPS_PORT
+          value: "11443"
+        ports:
+        - containerPort: 1180
+          name: http-port
+        - containerPort: 11443
+          name: https-port
+        resources:
+          requests:
+            cpu: "1m"
+            memory: "20Mi"
+          limits:
+            cpu: "10m"
+            memory: "20Mi"
+EOF
+
+```
+
+5. Egress gateway image needs to be downloaded onto the the nodes where egress gateway pods are deployed. We need to identify the pull secret that is needed for pulling Calico Enterprise images, and copy this into the namespace where you plan to create your egress gateways. Calico Enterprise by default uses a secret named `tigera-pull-secret`. Run the following command to copy `tigera-pull-secret` from `calico-system` namespace to the `app1` namespace.
+
+```
+kubectl create secret generic egress-pull-secret --from-file=.dockerconfigjson=/home/tigera/config.json --type=kubernetes.io/dockerconfigjson -n app1
+
 ```
 
 ## 8.2. Deploy Egress Gateway
