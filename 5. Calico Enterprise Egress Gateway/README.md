@@ -122,8 +122,11 @@ kubectl create secret generic egress-pull-secret --from-file=.dockerconfigjson=/
 
 ```
 
-7. Deploy the Egress gateway with the desired label to be used as selector by namespace and app workloads using this Egress Gateway. Browse to the following link, copy the egress-gateway deployment, and make sure the following configurations are set. 
-**Note:** The following manifest is just provided below as a reference to the valudate that needs to be verified. Since Tigera continously updates this manifest with the new features and configurations paramters, this manifest should be downloads from the Tigera docs site.
+7. Deploy the Egress gateway by browsing to the following link, copy the egress-gateway deployment, and deploy it in the cluster. Make sure the version of egress-gate images matches the Calico Enterprise version deployed in the cluster.
+
+https://docs.tigera.io/networking/egress/egress-gateway-on-prem#deploy-a-group-of-egress-gateways 
+
+**Note:** Since Tigera continously updates this manifest with the new features and configurations paramters, this manifest should be downloads from the Tigera docs site. Following is a sample manifest from the docs site.
 
 
 
@@ -135,7 +138,7 @@ metadata:
   name: egress-gateway
   namespace: default
   labels:
-  **egress-code: red** 
+    egress-code: red
 spec:
   replicas: 1
   selector:
@@ -152,10 +155,26 @@ spec:
       - name: tigera-pull-secret
       nodeSelector:
         kubernetes.io/os: linux
-      initContainers:
-      - name: egress-gateway-init
-        command: ["/init-gateway.sh"]
-        image: quay.io/tigera/egress-gateway:v3.15.0
+      containers:
+      - name: egress-gateway
+        image: quay.io/tigera/egress-gateway:v3.14.3
+        env:
+        - name: EGRESS_POD_IP
+          valueFrom:
+            fieldRef:
+              fieldPath: status.podIP
+        securityContext:
+          privileged: true
+        volumeMounts:
+        - mountPath: /var/run
+          name: policysync
+      terminationGracePeriodSeconds: 0
+      volumes:
+      - flexVolume:
+          driver: nodeagent/uds
+        name: policysync
+EOF
+
 ```
 
 ## 8.2.2. Connect the namespace to the gateways it should use
