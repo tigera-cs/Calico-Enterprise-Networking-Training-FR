@@ -41,16 +41,17 @@ kubectl patch felixconfiguration.p default --type='merge' -p '{"spec":{"policySy
 3. Egress gateways use the IPPool resource for a particular application when it connects outside of the cluster. Run the following command to create the egress gateway IPPool.
 
 ```
-kubectl apply -f -<<EOF
+kubectl apply -f - <<EOF
 apiVersion: projectcalico.org/v3
 kind: IPPool
 metadata:
   name: egress-ippool-1
 spec:
-  cidr: 10.50.0.0/31
-  blockSize: 32
+  cidr: 10.10.10.0/31
+  blockSize: 31
   nodeSelector: "!all()"
 EOF
+
 ```
 
 4. Let's create a namespace and application, which will be using egress gateway to connect to resources outside the cluster.
