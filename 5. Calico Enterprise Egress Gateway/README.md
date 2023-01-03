@@ -126,41 +126,100 @@ kubectl create secret generic egress-pull-secret --from-file=.dockerconfigjson=/
 
 
 ```
-kubectl apply -f -<<EOF
+kubectl apply -f - <<EOF
 apiVersion: apps/v1
-kind: DaemonSet
+kind: Deployment
 metadata:
   name: egress-gateway
-  namespace: app1
+  namespace: default
   labels:
     egress-code: red
 spec:
+  replicas: 1
   selector:
     matchLabels:
       egress-code: red
   template:
     metadata:
       annotations:
-        cni.projectcalico.org/ipv4pools: "[\"10.50.0.0/31\"]"
+        cni.projectcalico.org/ipv4pools: "[\"10.10.10.0/31\"]"
       labels:
         egress-code: red
     spec:
       imagePullSecrets:
-      - name: egress-pull-secret
+      - name: tigera-pull-secret
       nodeSelector:
         kubernetes.io/os: linux
-      containers:
-      - name: egress-gateway
-        image: quay.io/tigera/egress-gateway:v3.7.0
+      initContainers:
+      - name: egress-gateway-init
+        command: ["/init-gateway.sh"]
+        image: quay.io/tigera/egress-gateway:v3.15.0
         env:
+        # Use downward API to tell the pod its own IP address.
         - name: EGRESS_POD_IP
           valueFrom:
             fieldRef:
               fieldPath: status.podIP
         securityContext:
           privileged: true
+      containers:
+      - name: egress-gateway
+        command: ["/start-gateway.sh"]
+        image: quay.io/tigera/egress-gateway:v3.15.0
+        env:
+        # Optional: comma-delimited list of IP addresses to send ICMP pings to; if all probes fail, the egress
+        # gateway will report non-ready.
+        - name: ICMP_PROBE_IPS
+          value: ""
+        # Only used if ICMP_PROBE_IPS is non-empty: interval to send probes.
+        - name: ICMP_PROBE_INTERVAL
+          value: "5s"
+        # Only used if ICMP_PROBE_IPS is non-empty: timeout before reporting non-ready if there are no successful 
+        # ICMP probes.
+        - name: ICMP_PROBE_TIMEOUT
+          value: "15s"
+        # Optional comma-delimited list of HTTP URLs to send periodic probes to; if all probes fail, the egress
+        # gateway will report non-ready.
+        - name: HTTP_PROBE_URLS
+          value: ""
+        # Only used if HTTP_PROBE_URL is non-empty: interval to send probes.
+        - name: HTTP_PROBE_INTERVAL
+          value: "10s"
+        # Only used if HTTP_PROBE_URL is non-empty: timeout before reporting non-ready if there are no successful 
+        # HTTP probes.
+        - name: HTTP_PROBE_TIMEOUT
+          value: "30s"
+        # Port that the egress gateway serves its health reports.  Must match the readiness probe and health
+        # port defined below.
+        - name: HEALTH_PORT
+          value: "8080"
+        - name: EGRESS_POD_IP
+          valueFrom:
+            fieldRef:
+              fieldPath: status.podIP
+        securityContext:
+          capabilities:
+            add:
+            - NET_ADMIN
+        volumeMounts:
+        - mountPath: /var/run
+          name: policysync
+        ports:
+        - name: health
+          containerPort: 8080
+        readinessProbe:
+          httpGet:
+            path: /readiness
+            port: 8080
+          initialDelaySeconds: 3
+          periodSeconds: 3
       terminationGracePeriodSeconds: 0
+      volumes:
+      - csi:
+          driver: csi.tigera.io
+        name: policysync
 EOF
+
 ```
 
 ## 8.2.2. Connect the namespace to the gateways it should use
