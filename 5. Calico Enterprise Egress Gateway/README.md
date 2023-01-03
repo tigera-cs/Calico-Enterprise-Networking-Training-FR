@@ -204,25 +204,7 @@ kubectl annotate ns app1 egress.projectcalico.org/namespaceSelector="projectcali
 
 ```
 
-### 8.2.3. Verify both, the POD and Egress Gateway
-
-```
-kubectl get pods -n app1 -o wide 
-```
-```
-tigera@bastion:~$ kubectl get pods -n app1 -o wide 
-NAME                               READY   STATUS    RESTARTS   AGE   IP            NODE                                         NOMINATED NODE   READINESS GATES
-app1-deployment-5bbfd76f9d-2zrdt   1/1     Running   0          7d    10.48.0.80    ip-10-0-1-30.ca-central-1.compute.internal   <none>           <none>
-app1-deployment-5bbfd76f9d-pxlx8   1/1     Running   0          7d    10.48.0.203   ip-10-0-1-31.ca-central-1.compute.internal   <none>           <none>
-egress-gateway-jc4wm               1/1     Running   0          40s   10.50.0.1     ip-10-0-1-30.ca-central-1.compute.internal   <none>           <none>
-egress-gateway-n2zh2               1/1     Running   0          40s   10.50.0.0     ip-10-0-1-31.ca-central-1.compute.internal   <none>           <none>
-```
-
-## 8.3. BGP
-
-### 8.3.1. BGP configuration on Calico
-
-Deploy the needed BGP config, so we route our traffic to the bastion host through the egress gateway:
+11. Deploy the needed BGPConfiguration and BGPPeer, so we route our traffic to the bastion host through the egress gateway:
 
 ```
 kubectl apply -f -<<EOF
@@ -250,11 +232,10 @@ spec:
     - bgp-large-community
     - 64512:120
 EOF
+
 ```
 
-### 8.3.2. Check Calico Nodes connect to the bastion host
-
-Our bastion host is simulating our ToR switch, and it should have BGP sessions established to all nodes:
+12. Bastion host is simulating our upstream router and we should have BGP sessions established to all the cluster nodes using the above configurations. Run the following command on the bastion node to validate the bgp sessions from the bastion node to the cluster nodes.
 
 ```
 sudo birdc show protocols
@@ -271,7 +252,7 @@ worker1  BGP      master   up     13:24:20    Established
 worker2  BGP      master   up     13:24:20    Established   
 ```
 
-If you check the routes, you will see the edge gateway is reachable through the worker node where it has been deployed:
+13. Check the routes on the bastion node. You should see that the edge gateway pod is reachable through the worker node where it has been deployed:
 
 ```
 ip route
