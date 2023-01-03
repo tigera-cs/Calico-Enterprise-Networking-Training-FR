@@ -108,18 +108,21 @@ EOF
 
 ```
 
-5. Egress gateway image needs to be downloaded onto the the nodes where egress gateway pods are deployed. We need to identify the pull secret that is needed for pulling Calico Enterprise images, and copy this into the namespace where you plan to create your egress gateways. Calico Enterprise by default uses a secret named `tigera-pull-secret`. Run the following command to copy `tigera-pull-secret` from `calico-system` namespace to the `app1` namespace.
+5. Make sure the pods are running.
+
+```
+kubectl get pods -n app1
+
+```
+
+6. Egress gateway image needs to be downloaded onto the the nodes where egress gateway pods are deployed. We need to identify the pull secret that is needed for pulling Calico Enterprise images, and copy this into the namespace where you plan to create your egress gateways. Calico Enterprise by default uses a secret named `tigera-pull-secret`. Run the following command to copy `tigera-pull-secret` from `calico-system` namespace to the `app1` namespace.
 
 ```
 kubectl create secret generic egress-pull-secret --from-file=.dockerconfigjson=/home/tigera/config.json --type=kubernetes.io/dockerconfigjson -n app1
 
 ```
 
-## 8.2. Deploy Egress Gateway
-
-### 8.2.1.EGW
-
-Deploy the Egress gateway with the desired label to be used as an selector by namespace and app workloads using this Egress Gateway. In this example, the label we are using is `egress-code: red`. Please also note the IP Pool assigned to this Egress Gateway. In the cni.projectcalico.org/ipv4pools annotation, the IP Pool can be specified either by its name (e.g. egress-ippool-1) or by its CIDR (e.g. 10.58.0.0/31).
+7. Deploy the Egress gateway with the desired label to be used as selector by namespace and app workloads using this Egress Gateway. In this example, the label we are using is `egress-code: red`. Please also note the IPPool assigned to this Egress Gateway. In the `cni.projectcalico.org/ipv4pools` annotation, the IPPool can be specified either by its name (e.g. egress-ippool-1) or by its CIDR (e.g. 10.58.0.0/31).
 
 
 ```
