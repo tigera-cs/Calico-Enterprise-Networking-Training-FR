@@ -116,10 +116,10 @@ kubectl get pods -n app1
 
 ```
 
-6. Egress gateway image needs to be downloaded onto the the nodes where egress gateway pods are deployed. We need to identify the pull secret that is needed for pulling Calico Enterprise images, and copy this into the namespace where you plan to create your egress gateways. Calico Enterprise by default uses a secret named `tigera-pull-secret`. Run the following command to copy `tigera-pull-secret` from `calico-system` namespace to the `app1` namespace.
+6. Egress gateway image needs to be downloaded onto the the nodes where egress gateway pods are deployed. We need to identify the pull secret that is needed for pulling Calico Enterprise images, and copy this into the namespace where you plan to create your egress gateways. Calico Enterprise by default uses a secret named `tigera-pull-secret`. Run the following command to copy `tigera-pull-secret` from `calico-system` namespace to the `default` namespace.
 
 ```
-kubectl create secret generic egress-pull-secret --from-file=.dockerconfigjson=/home/tigera/config.json --type=kubernetes.io/dockerconfigjson -n app1
+kubectl get secret tigera-pull-secret --namespace=calico-system -o yaml | grep -v '^[[:space:]]*namespace:[[:space:]]*calico-system' | kubectl apply --namespace=default -f -
 
 ```
 
@@ -181,11 +181,27 @@ spec:
 EOF
 
 ```
+8. Make sure that the egress gateway pod is running.
 
-## 8.2.2. Connect the namespace to the gateways it should use
+```
+NAME                               READY   STATUS    RESTARTS   AGE
+egress-gateway-74c977bb77-5bxsm    1/1     Running   0          28s
+nginx-deployment-9456bbbf9-2vkfx   1/1     Running   0          21h
+nginx-deployment-9456bbbf9-6g6gl   1/1     Running   0          21h
+nginx-deployment-9456bbbf9-rkl9s   1/1     Running   0          21h
+```
+
+9. We will now need to configure our egress gateway client (app1 application) to use the egress gateway. We could configure specific pods/deployments in app1 namespace to use the egress gateway by annotating the pods/deployment or all the pods/deployments in app1 namespace by annotating the namespace. Since we only have a single app in app1 namespace, we will configure the annotation on the namespace.
 
 ```
 kubectl annotate ns app1 egress.projectcalico.org/selector='egress-code == "red"'
+
+```
+10. By default the above selector can only match egress gateways in the same namespace. To select gateways in a different namespace, specify a namespaceSelector annotation as well. Since our egress gateway pod is running in `default` namespace and our egress gateway client is running in `app1` namespace, we need to run the following command.
+
+```
+kubectl annotate ns app1 egress.projectcalico.org/namespaceSelector="projectcalico.org/name == 'default'"
+
 ```
 
 ### 8.2.3. Verify both, the POD and Egress Gateway
