@@ -245,7 +245,7 @@ spec:
   - name: bgp-large-community
     value: 64512:120
   prefixAdvertisements:
-  - cidr: 10.50.0.0/31
+  - cidr: 10.10.10.0/31
     communities:
     - bgp-large-community
     - 64512:120
