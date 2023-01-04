@@ -364,3 +364,61 @@ kubectl edit deployments.apps egress-gateway
 ```
 
 ![patch-egress-gateway-deployment](img/1.egress-gateway-deployment-patch.JPG)
+
+25. Make sure that the egress gateway pod is running by running the following command.
+
+```
+kubectl get pods -o wide   
+```
+
+26. Let's now implement a security policy that blocks ICMP traffic to `10.0.1.10`, but allows every other traffic.
+
+```
+kubectl apply -f -<<EOF
+apiVersion: projectcalico.org/v3
+kind: NetworkPolicy
+metadata:
+  name: default.egress-gateway-allow-everything-deny-ping-to-bastion
+  namespace: default
+spec:
+  tier: default
+  selector: egress-code == "red"
+  serviceAccountSelector: ''
+  egress:
+    - action: Deny
+      protocol: ICMP
+      source: {}
+      destination:
+        nets:
+          - 10.0.1.10/32
+    - action: Allow
+      source: {}
+      destination: {}
+  types:
+    - Egress
+EOF
+
+```
+27. `ICMP_PROBE_TIMEOUT` environment variable is configured to `15s` by default. It should take about 15-20s after implementing the above policy for the egress gateway pod to show as non-ready as depiected below.
+
+```
+Every 2.0s: kubectl get pods -o wide                                                                                                                                                                                        bastion: Wed Jan  4 01:42:09 2023
+
+NAME                               READY   STATUS    RESTARTS   AGE     IP            NODE                                      NOMINATED NODE   READINESS GATES
+egress-gateway-5fb89cf946-snznd    0/1     Running   0          3m25s   10.10.10.0    ip-10-0-1-31.eu-west-1.compute.internal   <none>           <none>
+nginx-deployment-9456bbbf9-2vkfx   1/1     Running   0          25h     10.48.0.208   ip-10-0-1-30.eu-west-1.compute.internal   <none>           <none>
+nginx-deployment-9456bbbf9-6g6gl   1/1     Running   0          25h     10.48.0.38    ip-10-0-1-31.eu-west-1.compute.internal   <none>           <none>
+nginx-deployment-9456bbbf9-rkl9s   1/1     Running   0          25h     10.48.0.37    ip-10-0-1-31.eu-west-1.compute.internal   <none>           <none>****
+```
+
+28. Follow the same connectivity steps that were done from step 14-18 above. You should still be able to make connections from `app1` to `10.0.1.10` as shown below and the connections should appear to be coming from egress gateway pod. The reason is that egress gateway daemon is still running in the container and just the ICMP probe has failed 
+
+```
+Listening on 0.0.0.0 7777
+Connection received on 10.10.10.0 35615
+Connection received on 10.10.10.0 39185
+Connection received on 10.10.10.0 36269
+Connection received on 10.10.10.0 42397
+Connection received on 10.10.10.0 44511
+Connection received on 10.10.10.0 42293
+```
