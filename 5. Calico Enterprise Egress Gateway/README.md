@@ -356,6 +356,11 @@ ip route show table 250
 default via 10.10.10.0 dev egress.calico onlink 
 ```
 
-24. 
+24. Starting Calico Enterprise 3.15, egress gateway supports using HTTP and ICMP probes for readiness health checking. If all probes of one type `ICMP/HTTP` fail, egress gateway pod failing the probe goes non-Ready. Let's configure our egress-gateway deployment to ping bastion node `10.0.1.10` for readiness check. Should this ping fail, egress gateway pod should go non-ready. Use the following command and set the value for `ICMP_PROBE_IPS` to `10.0.1.10`. Then save and exit. Egress gateway pod should restart because of this change.
+
+```
+kubectl edit deployments.apps egress-gateway
+
+```
 
 ![patch-egress-gateway-deployment](img/1.egress-gateway-deployment-patch.JPG)
