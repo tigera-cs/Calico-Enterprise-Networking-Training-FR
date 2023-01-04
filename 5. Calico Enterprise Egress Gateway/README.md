@@ -357,3 +357,5 @@ default via 10.10.10.0 dev egress.calico onlink
 ```
 
 24. 
+
+![patch-egress-gateway-deployment](img/1.egress-gateway-deployment-patch.JPG)
