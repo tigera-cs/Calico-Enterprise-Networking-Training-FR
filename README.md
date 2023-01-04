@@ -34,7 +34,11 @@ To ssh into the lab instances, type the following commands.
 ## Lab modules
 
 [1. Install Calico Enterprise](https://github.com/Pooriya-a/CalicoEnterprise-Networking-Training/tree/main/1.%20Install%20Calico%20Enterprise)
+
 [2. Implement pod networking using Calico Enterprise CNI and IPAM](https://github.com/Pooriya-a/CalicoEnterprise-Networking-Training/tree/main/2.%20Implement%20pod%20networking%20using%20Calico%20Enterprise%20CNI%20and%20IPAM)
+
 [3. Cross Node Connectivity](https://github.com/Pooriya-a/CalicoEnterprise-Networking-Training/tree/main/3.%20Cross%20Node%20Connectivity)
+
 [4. Kubernetes Services and CE Service Advertisement](https://github.com/Pooriya-a/CalicoEnterprise-Networking-Training/tree/main/4.%20Kubernetes%20Services%20and%20CE%20Service%20Advertisement)
+
 [5. Calico Enterprise Egress Gateway](https://github.com/Pooriya-a/CalicoEnterprise-Networking-Training/tree/main/5.%20Calico%20Enterprise%20Egress%20Gateway)
