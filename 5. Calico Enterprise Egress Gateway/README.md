@@ -184,11 +184,16 @@ EOF
 8. Make sure that the egress gateway pod is running.
 
 ```
-NAME                               READY   STATUS    RESTARTS   AGE
-egress-gateway-74c977bb77-5bxsm    1/1     Running   0          28s
-nginx-deployment-9456bbbf9-2vkfx   1/1     Running   0          21h
-nginx-deployment-9456bbbf9-6g6gl   1/1     Running   0          21h
-nginx-deployment-9456bbbf9-rkl9s   1/1     Running   0          21h
+kubectl get pods -o wide
+
+```
+
+```
+NAME                               READY   STATUS    RESTARTS   AGE    IP            NODE                                      NOMINATED NODE   READINESS GATES
+egress-gateway-74c977bb77-5bxsm    1/1     Running   0          133m   10.10.10.0    ip-10-0-1-31.eu-west-1.compute.internal   <none>           <none>
+nginx-deployment-9456bbbf9-2vkfx   1/1     Running   0          23h    10.48.0.208   ip-10-0-1-30.eu-west-1.compute.internal   <none>           <none>
+nginx-deployment-9456bbbf9-6g6gl   1/1     Running   0          23h    10.48.0.38    ip-10-0-1-31.eu-west-1.compute.internal   <none>           <none>
+nginx-deployment-9456bbbf9-rkl9s   1/1     Running   0          23h    10.48.0.37    ip-10-0-1-31.eu-west-1.compute.internal   <none>           <none>
 ```
 
 9. We will now need to configure our egress gateway client (app1 application) to use the egress gateway. We could configure specific pods/deployments in app1 namespace to use the egress gateway by annotating the pods/deployment or all the pods/deployments in app1 namespace by annotating the namespace. Since we only have a single app in app1 namespace, we will configure the annotation on the namespace.
@@ -268,19 +273,13 @@ default via 10.0.1.1 dev ens5 proto dhcp src 10.0.1.10 metric 100
         nexthop via 10.0.1.31 dev ens5 weight 1
 ```
 
-## 8.4. Verification
-
-### 8.4.1. Test and verify Egress Gateway in action
-
-Open a second browser to your lab (`<LABNAME>.lynx.tigera.ca`) if not already done so that we have an additional terminal to test the egress gateway.
-
-On that terminal, start netcat in the bastion host to listen to an specific port:
+14. Let verify our egress gateway configurations in action and ensure that `app1` IP address are proxied by egress gateway when connecting to services outside the cluster. Open a second terminal to your lab instance. On that terminal, start netcat in the bastion host to listen to a specific port.
 
 ```
 netcat -nvlkp 7777
 ```
 
-On the original terminal window, exec into any of the pods in the app1 namespace.
+15. On the original terminal window, exec into any of the pods in the app1 namespace.
 
 ```
 APP1_POD=$(kubectl get pod -n app1 --no-headers -o name | head -1) && echo $APP1_POD
@@ -289,35 +288,50 @@ APP1_POD=$(kubectl get pod -n app1 --no-headers -o name | head -1) && echo $APP1
 kubectl exec -ti $APP1_POD -n app1 -- sh
 ```
 
-And try to connect to the port in the bastion host.
+16. Try to connect to the port in the bastion host.
 
 ```
 nc -zv 10.0.1.10 7777
 ```
 
-Type `exit` to exit out the pod terminal.
-
-Go to the terminal that you ran the following netcat server on the bastion node. You should see an output saying you connected from the IP of one of the egress gateway pods to the netcat server.
+17. Type `exit` to exit out the pod terminal.
 
 ```
-$ sudo tcpdump -i ens5 port 7777
-tcpdump: verbose output suppressed, use -v or -vv for full protocol decode
-listening on ens5, link-type EN10MB (Ethernet), capture size 262144 bytes
-07:51:50.709295 IP ip-10-50-0-0.ca-central-1.compute.internal.41521 > ip-10-0-1-10.ca-central-1.compute.internal.7777: Flags [S], seq 1965935313, win 62727, options [mss 8961,sackOK,TS val 4198299208 ecr 0,nop,wscale 7], length 0
-07:51:50.709346 IP ip-10-0-1-10.ca-central-1.compute.internal.7777 > ip-10-50-0-0.ca-central-1.compute.internal.41521: Flags [R.], seq 0, ack 1965935314, win 0, length 0
+exit
 ```
 
-Stop the netcat listener process in the bastion host with `^C`.
+18. Go to the terminal that you ran the following netcat server on the bastion node. You should see an output saying you connected from the IP of one of the egress gateway pods to the netcat server.
 
-### 8.4.2. Routing info on the Calico Node where App Workload is running
+```
+tigera@bastion:~$ netcat -nvlkp 7777
+Listening on 0.0.0.0 7777
+Connection received on 10.10.10.0 39457tigera@bastion:~$ netcat -nvlkp 7777
+Listening on 0.0.0.0 7777
+Connection received on 10.10.10.0 39457
+```
 
-Login to worker node where the egress gateway and pods were deployed:
+19. Stop the netcat listener process in the bastion host with `^C`.
+
+20. Let's check on the special routing that Felix has implemented to proxy the `app1` traffic through the egress gateway. Check where the egress gateway client pods are running. 
+
+```
+kubectl get pods -n app1 -o wide
+
+```
+
+```
+NAME                               READY   STATUS    RESTARTS   AGE     IP            NODE                                      NOMINATED NODE   READINESS GATES
+app1-deployment-6ccc9654cb-c8ztq   1/1     Running   0          3h50m   10.48.0.60    ip-10-0-1-31.eu-west-1.compute.internal   <none>           <none>
+app1-deployment-6ccc9654cb-wjnfl   1/1     Running   0          3h50m   10.48.0.210   ip-10-0-1-30.eu-west-1.compute.internal   <none>           <none>
+```
+
+21. Log into the worker node where the egress gateway client pod `app1` is running. In this case, there are two pods and each one is running on a different worker node. Choose a node where the `app1` is running on and ssh into that node. Note `app1` pod IP address running on worker2. It is `10.48.0.60` in this case.
 
 ```
 ssh worker2
 ```
 
-Observe the routing policy is programmed for the the App workload POD IP
+22. Observe the routing policy that is programmed for the the `app1` workload POD IP address `10.48.0.60`.
 
 ```
 ip rule
@@ -325,27 +339,21 @@ ip rule
 
 ```
 0:      from all lookup local
-100:    from 10.48.116.155 fwmark 0x80000/0x80000 lookup 250
+100:    from 10.48.0.60 fwmark 0x80000/0x80000 lookup 250
 32766:  from all lookup main
 32767:  from all lookup default
 ```
 
-Confirm that the policy is choosing the egress gateway as the next hop for any source traffic from App workload POD IP. 
+23. Confirm that the policy is choosing the egress gateway as the next hop for any source traffic from `app1`.
 #### Note: ensure to use the correct table number with the following command. In this case, the table number is 250.
 
 ```
 ip route show table 250
-```
 
 ```
-default onlink 
-        nexthop via 10.50.0.0 dev egress.calico weight 1 onlink 
-        nexthop via 10.50.0.1 dev egress.calico weight 1 onlink
+
+```
+default via 10.10.10.0 dev egress.calico onlink 
 ```
 
-You can close the second browser tab with the terminal now as we will not use it for the rest of the labs.
-
-## Conclusion
-
-In this lab we observed how we can successfully setup egress gateway in a calico cluster and share routing information with external routing device over BGP.
-
+24. 
