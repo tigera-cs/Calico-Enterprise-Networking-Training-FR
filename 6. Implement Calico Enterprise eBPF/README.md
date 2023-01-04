@@ -1,15 +1,30 @@
-# *ENABLE eBPF and Troubleshoot* #
 
-# Pre enable Checks: #
+### Overview
 
-*Connect on master node and compute node and ensure they have supported kernel:
-Run the following commands on each node:*
+Calico Enterprise has got a pluggable dataplane, which enables Calico Enterprise to easily implement and adopt various dataplanes. Currently Calico Enterprise  supports four different dataplanes. Standard Linux iptables dataplane, eBPF dataplane, Windows dataplane, and VPP dataplane. eBPF is an alternative dataplane for iptables in Linux. Instead of using Linux standard dataplane, which uses iptables and conntrack, the dataplane uses a set of bpf programs.
+eBPF has lower overhead and better performance compared to iptables at large scales.
 
-    tigera@bastion:~$ uname -rv
+After finshing this lab, you learn how to enable Calico Enterprise eBPF along with some troubleshooting guidance.
 
-The output should look like this:
+______________________________________________________________________________________________________________________________________________________________________
 
-    5.4.0-42-generic #46-Ubuntu SMP Fri Jul 10 00:24:02 UTC 2020
+### Enable Calico Enterprise eBPF
+
+1. Calico Enterprise eBPF requires specific Linux kernel versions based on the Linux operation system in use in the cluster. SSH into all the cluster nodes and ensure they use supported kernel. For more information about the supported Linux kernel versions, check on the Calico Enterprise eBPF documentation provide below.
+
+https://docs.tigera.io/maintenance/ebpf/
+
+Run the following commands on each cluster node.
+
+```
+uname -rv
+```
+
+You should receive a similar output.
+
+```
+5.15.0-1026-aws #30~20.04.2-Ubuntu SMP Fri Nov 25 14:53:22 UTC 2022
+```
 
 To verify that the BPF filesystem is mounted, on the host, you can run the following command:
 
