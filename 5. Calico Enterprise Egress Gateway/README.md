@@ -15,14 +15,7 @@ After finshing this lab, you should gain a good understanding of how to deploy C
 
 ______________________________________________________________________________________________________________________________________________________________________
 
-### 
-
-The purpose of this lab is to demonstrate the funciationality of Egress Gateway. In this lab, we will:
-
-8.1. Enable per namespace Egress Gateway support \
-8.2. Deploy an Egress Gateway in *one* namespace \
-8.3. Enable BGP with upstream routers (Bird) and advertise the Egress Gateway IP Pool \
-8.4. Test and Verify the communication
+### Implement Calico Enterprise Egress Gateway
 
 
 1. Enable egress gateway support by patching FelixConfiguration to support egress gateway both per namespace and per pod.
