@@ -205,7 +205,7 @@ EOF
 
 15.  Get yourself familiar with the resources in the following manifest and then install the Calico Enterprise custom resources.
 
-  **Note:** We have already customized and deployed the Installation custom resource, which is also available in the following manifest. However, since there is no customization in the following manifest, there is no change in the Installation resource configuration. We will just receive a message tha the resource already exist.
+  **Note:** We have already customized and deployed the Installation custom resource, which is also available in the following manifest. However, since there is no customization in the following manifest, there is no change in the Installation resource configuration. We will just receive a message that the resource already exist.
 
 ```
 kubectl create -f https://docs.tigera.io/manifests/custom-resources.yaml
