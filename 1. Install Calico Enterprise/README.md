@@ -629,7 +629,7 @@ kubectl get secret $(kubectl get serviceaccount tigercub -o jsonpath='{range .se
 6. Copy the token where you can easily retrieve it later. 
 7. Access the Manager UI by browsing to the following URL and paste your token into token field.
 
-**Note:** Do not foroget to replace `<LABNAME>` with your lab instance name.2
+**Note:** Do not foroget to replace `<LABNAME>` with your lab instance name.
 
 ```
 https://manager.<LABNAME>.lynx.tigera.ca
