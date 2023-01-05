@@ -328,7 +328,7 @@ You should receive an output similar to the following.
 ippool.projectcalico.org/pool2-ipv4-ippool created
 ```
 
-3.Check the IPPool that exist in the cluster.
+3. Check the IPPools that exist in the cluster.
 
 ```
 calicoctl get ippools
