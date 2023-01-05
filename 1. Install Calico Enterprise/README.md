@@ -603,7 +603,7 @@ EOF
 
 ```
 
-2. Check your access to the yaobank application and CE Manager UI using the following URLs.
+2. Check your access to the yaobank application and CE Manager UI using the following URLs. Make sure to replace `<LABNAME>` with the name of your lab instance.
 
 ```
 https://manager.<LABNAME>.lynx.tigera.ca
