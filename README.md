@@ -16,7 +16,7 @@ Followings is a short description of each node in the lab.
 * **Worker2** is a Kubernetes worker node.
 * **Bastion** is a node outside the Kubernetes cluster and is used to run kubectl/calicoctl commands. This node also runs a standalone instance of bird and is used for bgppeering in the relevant lab modules fucntioning as an upstream router. Finally, since this node is outside the cluster, it is used to simulate external connectivity when needed.
 
-Followings are the CIDRs used to build the trainibg lab environment.
+Followings are the CIDRs used to build the training lab environment.
 
 * 10.0.1.0/24 host CIDR
 * 10.48.0.0/16 Kubernetes Pod Network (via kubeadm --pod-network-cidr)
@@ -24,7 +24,7 @@ Followings are the CIDRs used to build the trainibg lab environment.
 
 ## SSH access to the nodes
 
-To ssh into the lab instances, type the following commands.
+To ssh into the lab instances, type the following commands. The associated IP addresses are included in the lab setup diagram.
 
 * ssh control1 
 * ssh worker1
