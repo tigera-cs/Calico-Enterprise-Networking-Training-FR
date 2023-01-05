@@ -279,7 +279,7 @@ kubectl create -f /home/tigera/license.yaml
 watch kubectl get tigerastatus
 ```
 
-You should an output similar to the following, which denotes Calico Enterprise is fully deployed in the cluster.
+You should see an output similar to the following, which denotes Calico Enterprise is fully deployed in the cluster.
 ```
 NAME                  AVAILABLE   PROGRESSING   DEGRADED   SINCE
 apiserver             True        False         False      53m
