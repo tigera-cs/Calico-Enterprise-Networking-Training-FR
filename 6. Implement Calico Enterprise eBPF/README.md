@@ -26,95 +26,92 @@ You should receive a similar output.
 5.15.0-1026-aws #30~20.04.2-Ubuntu SMP Fri Nov 25 14:53:22 UTC 2022
 ```
 
-To verify that the BPF filesystem is mounted, on the host, you can run the following command:
+Verify that the BPF filesystem is mounted by running the following command.
 
-    tigera@bastion:~$ mount | grep "/sys/fs/bpf"
+```
+mount | grep "/sys/fs/bpf"
+```
+
+You should receive a similar output.
+
+```
+bpf on /sys/fs/bpf type bpf (rw,nosuid,nodev,noexec,relatime,mode=700)
+```
+
+2. In eBPF mode, Calico Enterprise implements Kubernetes service networking directly rather than relying on kube-proxy. This means that, like kube-proxy, Calico Enterprise needs to directly connect to the Kubernetes APIServer rather than via the APIServer’s ClusterIP. Refer to the following documentation for more information on this.
+
+https://docs.tigera.io/maintenance/ebpf/enabling-ebpf#configure-calico-enterprise-to-talk-directly-to-the-api-server
+
+3. First, make a note of the address of the APIServer.Run the following command to find the APIServer IP address.
+
+```
+kubectl get endpoints kubernetes -o wide
+
+```
+
+You should receive a similar output with a single IP address and port number.
+
+```
+NAME         ENDPOINTS        AGE
+kubernetes   10.0.1.20:6443   6d1h
+```
  
-If the BPF filesystem is mounted, you should see:
+4. Then, create the following config map in the tigera-operator namespace using the host and port number determined above.
 
-    none on /sys/fs/bpf type bpf (rw,nosuid,nodev,noexec,relatime,mode=700)
+```
+kubectl apply -f -<<EOF
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: kubernetes-services-endpoint
+  namespace: tigera-operator
+data:
+  KUBERNETES_SERVICE_HOST: "10.0.1.20"
+  KUBERNETES_SERVICE_PORT: "6443"
+EOF
 
--  
-- **Configure Calico Enterprise to talk directly to the API server**
+```
 
-In eBPF mode, Calico Enterprise implements Kubernetes service networking directly (rather than relying on kube-proxy). This means that, like kube-proxy, Calico Enterprise must connect directly to the Kubernetes API server rather than via the API server’s ClusterIP.
-
-First, make a note of the address of the API server:
-
-API server, IP address and port  can be found by running:
-
-    tigera@bastion:~$ kubectl get endpoints kubernetes -o wide
-
-The output should look like the following, with a single IP address and port under “ENDPOINTS”:
-
-    NAME ENDPOINTS AGE
-    kubernetes   172.16.101.157:6443   40m
+5. It can take up to 60s for kubelet to pick up the ConfigMap. tigera operator will then do a rolling update of the relevant pods in the calico-system namespace to pass on the change. calico-node, calico-typha, and calico-kubecontroller pods should be restarted. Run the following command to validate.
  
-Then, create the following config map in the tigera-operator namespace using the host and port determined above:
+```
+watch kubectl get pods -n calico-system
 
+```
 
-Create a file called `tigera@bastion:~$ vi api_configmap.yaml`
+**Note:** If you do not see the pods restart then it’s possible that the ConfigMap wasn’t picked up (sometimes Kubernetes is slow to propagate ConfigMap ). Try restaarting the tigera-operator.
 
-    kind: ConfigMap
-    apiVersion: v1
-    metadata:
-      name: kubernetes-services-endpoint
-      namespace: tigera-operator
-    data:
-      KUBERNETES_SERVICE_HOST: "10.0.1.20"
-      KUBERNETES_SERVICE_PORT: "6443"
+6. In eBPF mode Calico Enterprise replaces kube-proxy and there is no need to run kube-proxy in the cluster. Run the following command to disable kube-proxy.
 
-Apply the configuration ```$ kubectl apply -f api_configmap.yaml```
+```
+kubectl patch ds -n kube-system kube-proxy -p '{"spec":{"template":{"spec":{"nodeSelector":{"non-calico": "true"}}}}}'
+
+``` 
  
-Wait 60s for kubelet to pick up the ConfigMap (see Kubernetes issue #30189); then, restart the operator to pick up the change:
+7. To enable eBPF mode, change the spec.calicoNetwork.linuxDataplane parameter in the operator’s Installation resource to "BPF". You also need to remove the hostPorts setting because host ports are not supported in BPF mode.
 
-    tigera@bastion:~$ kubectl delete pod -n tigera-operator -l k8s-app=tigera-operator
- 
-The operator will then do a rolling update of Calico Enterprise to pass on the change. Confirm that pods restart and then reach the Running state with the following command:
+```
+kubectl patch installation.operator.tigera.io default --type merge -p '{"spec":{"calicoNetwork":{"linuxDataplane":"BPF", "hostPorts":null}}}'
 
+```` 
 
-    watch kubectl get pods -n calico-system
- 
-***Note:*** If you do not see the pods restart then it’s possible that the ConfigMap wasn’t picked up (sometimes Kubernetes is slow to propagate ConfigMap ). You can try restarting the operator again.
+8. Direct Server Return (DSR) mode is disabled by default. To enable it, set the BPFExternalServiceMode Felix configuration parameter to "DSR". Run the following command to enable DSR. For more information on DSR, visit the following link.
 
-- **Configure kube-proxy**
+https://docs.tigera.io/maintenance/ebpf/enabling-ebpf#try-out-dsr-mode
 
+```
+kubectl patch felixconfigurations default --patch='{"spec": {"bpfExternalServiceMode": "DSR"}}'
 
-In eBPF mode Calico Enterprise replaces kube-proxy so it wastes resources to run both. This section explains how to disable kube-proxy in some common environments.
+```
 
-Clusters that run kube-proxy with a DaemonSet (such as kubeadm)
-Use the following command:
+9. To switch back from DSR to tunneled mode, set the configuration parameter to "Tunnel".
 
+```
+kubectl patch felixconfigurations default --patch='{"spec": {"bpfExternalServiceMode": "Tunnel"}}'
 
-    tigera@bastion:~$ kubectl patch ds -n kube-system kube-proxy -p '{"spec":{"template":{"spec":{"nodeSelector":{"non-calico": "true"}}}}}'
- 
- 
-# Enable eBPF mode #
-
-To enable eBPF mode, change the spec.calicoNetwork.linuxDataplane parameter in the operator’s Installation resource to "BPF"; you must also clear the hostPorts setting because host ports are not supported in BPF mode:
-
-
-    tigera@bastion:~$ kubectl patch installation.operator.tigera.io default --type merge -p '{"spec":{"calicoNetwork":{"linuxDataplane":"BPF", "hostPorts":null}}}'
- 
- 
- **Enable DSR mode**
--
-DSR mode is disabled by default. To enable it, set the BPFExternalServiceMode Felix configuration parameter to "DSR".
-
-This can be done with kubectl:
-
-
-    tigera@bastion:~$ kubectl patch felixconfiguration.projectcalcio.org default --patch='{"spec": {"bpfExternalServiceMode": "DSR"}}'
- 
-To switch back to tunneled mode, set the configuration parameter to "Tunnel":
-
-
-    tigera@bastion:~$ kubectl patch felixconfiguration.projectcalico.org default --patch='{"spec": {"bpfExternalServiceMode": "Tunnel"}}'
- 
- 
-# After install Checks: #
- 
-Check each calico-node pods enabled BPF successful:
+```
+    
+10. Check calico-node pods logs to verify eBPF is enabled. We will check the logs for one calico-node pod as demonstration below.
 
     tigera@bastion:~$ kubectl get pods -n calico-system -o wide | grep node
     calico-node-84r2t 1/1 Running   0  4m26s   10.0.1.20  ip-10-0-1-20   <none>   <none>
