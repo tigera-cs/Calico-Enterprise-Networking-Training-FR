@@ -17,7 +17,7 @@ ________________________________________________________________________________
 
 ### Install Calico Enterprise
 
- In this lab environment, Kubernetes has been preinstalled, but as your network plugin is not installed yet, so your nodes will appear as NotReady. This section walks you through the required steps to install Calico Enteprise as both the CNI provider and network policy engine provider.
+ In this lab environment, Kubernetes has been preinstalled, but as your network plugin is not installed yet your nodes will appear as NotReady. This section walks you through the required steps to install Calico Enteprise as both the CNI provider and network policy engine provider.
 
 1. Before getting started, let's enable bash autocomplete for kubectl so that we can easier interact with kubectl.
 
