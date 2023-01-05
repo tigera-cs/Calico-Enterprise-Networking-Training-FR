@@ -308,7 +308,7 @@ https://docs.tigera.io/maintenance/clis/calicoctl/install#install-calicoctl-as-a
 sudo mv calicoctl /usr/local/bin
 ```
 
-3.  We also need to make sure the "Cluster Calico Enterprise Version" matches the calicoctl version in "Client Version". Otherwise please raise this to your instructor.
+3.  We also need to make sure the `Cluster Calico Enterprise Version` matches the calicoctl version in `Client Version`. Otherwise please raise this to your instructor.
 
 ```
 calicoctl version
