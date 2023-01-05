@@ -431,3 +431,5 @@ kubectl delete networkpolicies.pro egress-gateway-allow-everything-deny-ping-to-
 kubectl delete deployments egress-gateway
 
 ```
+
+> **Congratulations! You have completed `5. Calico Enterprise Egress Gateway` lab.**
