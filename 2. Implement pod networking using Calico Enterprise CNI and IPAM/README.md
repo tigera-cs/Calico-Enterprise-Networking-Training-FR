@@ -294,7 +294,7 @@ Note the relevant information in the manifest:
 
 **Note:** You can also get IPPool information using `calicotctl` instead of `kubectl` in the previous command. If you use Openshift, you can replace `kubectl` with `oc`.
 
-In this cluster, Calico Enteprise has been configured to allocate IP addresses for pods from the `10.48.0.0/24` CIDR, which is a subset of the `10.48.0.0/16` configured on Kubernetes.
+In this cluster, Calico Enteprise has been configured to allocate IP addresses for pods from the `10.48.0.0/24` CIDR, which is a subset of the `10.48.0.0/16` configured through the Kubernetes APIServer.
 
 We have the following address ranges configured in this cluster.
 
