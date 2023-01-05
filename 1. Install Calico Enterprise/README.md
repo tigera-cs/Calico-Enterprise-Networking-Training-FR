@@ -634,7 +634,7 @@ kubectl get secret $(kubectl get serviceaccount tigercub -o jsonpath='{range .se
 ```
 https://manager.<LABNAME>.lynx.tigera.ca
 ```
-You shouls see an output similar to the following.
+You shouls see a page similar to the following.
 
 ![ce-manager-ui](img/3.Calico-enteprise-manager-ui.JPG)
 
