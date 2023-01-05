@@ -212,7 +212,7 @@ In this example output, we can see the route to the customer pod's IP `10.48.0.2
 
 11. We can also see several routes labelled `proto bird`. These are routes to pods on other nodes that Calico has learned over BGP. 
 
-To understand this better, consider this route in the example output above `10.48.0.192/26 via 10.0.1.30 dev ens5 proto bird`. It indicates pods with IP addresses falling within the `10.48.0.192/26` CIDR can be reached via `10.0.1.30` (which is worker1) through the `ens5` network interface (the host's main interface to the rest of the network). You should see similar routes in your output for each node.
+To understand this better, consider this route in the example output above `10.48.0.192/26 via 10.0.1.30 dev ens5 proto bird`. It indicates pods with IP addresses falling within the `10.48.0.192/26` CIDR can be reached via `10.0.1.30` through the `ens5` network interface (the host's main interface to the rest of the network). You should see similar routes in your output for each node.
 
 12. Calico uses route aggregation to reduce the number of routes when possible. (e.g. `/26` in this example). The `/26` corresponds to the default block size that Calico IPAM (IP Address Management) allocates on demand as nodes need pod IP addresses. (If desired, the block size can be configured in Calico IPAM settings.)  
 
