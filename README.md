@@ -1,5 +1,5 @@
 # Calico Enterprise Networking Training
-This is the hands-on lab guide for Calico Enterprise networking training.
+This is the hands-on lab guide for Calico Enterprise Networking Training.
 
 ## Lab setup
 
@@ -14,7 +14,7 @@ Followings is a short description of each node in the lab.
 * **Control1** is Kubernetes master node and runs Kubernetes control plane pods.
 * **Worker1** is a Kubernetes worker node.
 * **Worker2** is a Kubernetes worker node.
-* **Bastion** is a node outside the Kubernetes cluster and is used to run kubectl/calicoctl commands. This node also runs a standalone instance of bird and is used for bgppeering in the relevant lab modules. Finally, since this node is outside the cluster, it is used to simulate external connectivity when needed.
+* **Bastion** is a node outside the Kubernetes cluster and is used to run kubectl/calicoctl commands. This node also runs a standalone instance of bird and is used for bgppeering in the relevant lab modules fucntioning as an upstream router. Finally, since this node is outside the cluster, it is used to simulate external connectivity when needed.
 
 Followings are the CIDRs used to build the trainibg lab environment.
 
