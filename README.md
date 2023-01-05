@@ -42,3 +42,5 @@ To ssh into the lab instances, type the following commands. The associated IP ad
 [4. Kubernetes Services and CE Service Advertisement](https://github.com/Pooriya-a/CalicoEnterprise-Networking-Training/tree/main/4.%20Kubernetes%20Services%20and%20CE%20Service%20Advertisement)
 
 [5. Calico Enterprise Egress Gateway](https://github.com/Pooriya-a/CalicoEnterprise-Networking-Training/tree/main/5.%20Calico%20Enterprise%20Egress%20Gateway)
+
+[6. Implement Calico Enterprise eBPF](https://github.com/Pooriya-a/CalicoEnterprise-Networking-Training/tree/main/6.%20Implement%20Calico%20Enterprise%20eBPF)
