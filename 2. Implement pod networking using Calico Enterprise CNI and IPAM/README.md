@@ -347,7 +347,7 @@ pool2-ipv4-ippool     10.48.128.0/24   all()
 ```
 kubectl delete namespace yaobank
 ```
-You should receive an output similar to the following. This command might take about 1-2 minutes to complete. Please wait util the namespace and all of the resources assocaited with it are deleted.
+You should receive an output similar to the following. This command might take about 1-2 minutes to complete. Please wait util the namespace and all of the resources assocaited within it are deleted.
 
 ```
 namespace "yaobank" deleted
