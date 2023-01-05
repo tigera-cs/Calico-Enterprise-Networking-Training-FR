@@ -416,3 +416,18 @@ Connection received on 10.10.10.0 42397
 Connection received on 10.10.10.0 44511
 Connection received on 10.10.10.0 42293
 ```
+
+29. Clean up the resources that were deployed for the purpose of this lab.
+
+```
+kubectl delete ns app1
+
+```
+```
+kubectl delete networkpolicies.pro egress-gateway-allow-everything-deny-ping-to-bastion
+
+```
+```
+kubectl delete deployments egress-gateway
+
+```
