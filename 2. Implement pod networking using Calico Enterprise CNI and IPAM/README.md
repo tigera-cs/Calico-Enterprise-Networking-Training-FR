@@ -9,7 +9,7 @@ This lab provides the instructions to:
 
 ### Overview
 
-Calico is one of the most popular open-source CNI plugins available for the Kubernetes ecosystem. Calico provides a performant, scalable, and flexible CNI solution with advanced network administration capabilities. Like other CNI solutions, Calico CNI configures the pod IP address and updates the pod and node routing table to establish pod networking. However, there are some differences between how various CNI providers implement pod networking in a Kubernetes system. This lab covers how Calico CNI and IPAM implement pod networing and walk you through some of the advanced IPAM capabilities and use cases.
+Calico is one of the most popular open-source CNI plugins available for the Kubernetes ecosystem. Calico provides a performant, scalable, and pluggable CNI solution with advanced network administration capabilities. Like other CNI solutions, Calico CNI configures the pod IP address and updates the pod and node routing table to establish pod networking. However, there are some differences between how various CNI providers implement pod networking in a Kubernetes system. This lab covers how Calico CNI and IPAM implement pod networing and walk you through some of the advanced IPAM capabilities and use cases.
 
 
 
