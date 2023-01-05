@@ -78,7 +78,7 @@ Look at the `eth0` part of the output. The key things to note are:
 
 * The `eth0` interface is interface number 3 in the pod's network namespace.
 * `eth0` is a link to the host network namespace (indicated by `link-netnsid 0`). i.e. It is the pod's side of the veth pair (virtual ethernet pair) that connects the pod to the host's networking.
-* The `@if28` at the end of the interface name is the interface number of the other end of the veth pair within the host's network namespaces. In this example, interface number 28.  Remember this for later. We will take look at the other end of the veth pair shortly.
+* The `@if28` at the end of the interface name is the interface number of the other end of the veth pair within the hosts' network namespaces. In this example, interface number 28.  Remember this for later. We will take look at the other end of the veth pair shortly.
 
 5. Finally, let's look at the routes the pod sees.
 
