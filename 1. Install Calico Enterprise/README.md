@@ -646,7 +646,7 @@ kubectl -n tigera-elasticsearch get secret tigera-secure-es-elastic-user -o go-t
 ```
 9. Store the passsword where you can retrieve it later for subsequent labs.
 
-10. Open Kibana login page by clicking on the Kiaban icon on the Manager UI navigation bar on the left side of your browser page. You should a page similar to the following. Insert your username and password.
+10. Open Kibana login page by clicking on the Kibana icon on the Manager UI navigation bar on the left side of your browser page. You should a page similar to the following. Insert your username and password.
 
 ![kibana](img/4.Calico-enteprise-kibana.JPG)
 
