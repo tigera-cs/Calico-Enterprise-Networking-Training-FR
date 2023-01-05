@@ -528,10 +528,16 @@ summary-7579bd9566-cj4v4    1/1     Running   0          38s   10.48.0.205   ip-
 
 3. For now, the application we deployed is only accesible from outside the cluster through a NodePort. We can try the following port on any of the cluster nodes to access the customer pod, which is the frontend app. Following is trying the NodePort on the master node.
 
-**Note:** You need to ssh in the control1 node first by running "ssh control1".
+**Note:** You need to ssh in the `control1` node first by running `ssh control1`.
+
+```
+ssh control1
+
+```
 
 ```
 curl 10.0.1.20:30180
+
 ```
 ```
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
