@@ -35,7 +35,7 @@ customer-687b8d8f74-lmzqz   1/1     Running   0          129m   10.48.0.20   ip-
 ```
 Note the node on which the pod is running on (`ip-10-0-1-31.eu-west-1.compute.internal` in this example)
 
-2. Use kubectl to exec into the pod so we can check the pod networking details. 
+2. Use `kubectl` to exec into the pod so we can check the pod networking details. 
 
 ```
 kubectl exec -ti -n yaobank $(kubectl get pods -n yaobank -l app=customer -o name) bash
