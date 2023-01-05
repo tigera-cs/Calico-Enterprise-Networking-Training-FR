@@ -626,8 +626,8 @@ kubectl create clusterrolebinding tigercub-bind --clusterrole tigera-network-adm
 kubectl get secret $(kubectl get serviceaccount tigercub -o jsonpath='{range .secrets[*]}{.name}{"\n"}{end}' | grep token) -o go-template='{{.data.token | base64decode}}' && echo
 ```
 
-6. Copy the token where you can easily retrieve it later as we will use the token to access Calico Enterprise UI throughout the training. 
-7. Access the Manager UI by browsing to the following URL and paste your token in token field.
+6. Copy the token where you can easily retrieve it later. 
+7. Access the Manager UI by browsing to the following URL and paste your token into token field.
 
 **Note:** Do not foroget to replace `<LABNAME>` with your lab instance name.2
 
