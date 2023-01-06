@@ -197,7 +197,7 @@ ip -c link
     link/ether 66:c9:ee:b1:9b:47 brd ff:ff:ff:ff:ff:ff
 ```
 
-10. Let's examine the node routing table again. We can routes related to VXLAN overlay networking as indicted by `10.48.0.192/26 via 10.48.0.206 dev vxlan.calico onlink ` and routes related to native bgp networking as indicated by `10.48.128.0/26 via 10.0.1.31 dev ens5 proto bird `. The reason for having both VXLAN and native bgp networking in this cluster is that we have two IPPools one of which is configured to use VXLAN and the other is configured to use native bgp.
+10. Let's examine the node routing table again. We can see routes related to VXLAN overlay networking as indicted by `10.48.0.192/26 via 10.48.0.206 dev vxlan.calico onlink ` and routes related to native bgp networking as indicated by `10.48.128.0/26 via 10.0.1.31 dev ens5 proto bird `. The reason for having both VXLAN and native bgp networking in this cluster is that we have two IPPools one of which is configured to use VXLAN and the other is configured to use native bgp.
 
 ```
 ip route
