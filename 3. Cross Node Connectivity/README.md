@@ -167,7 +167,7 @@ kubectl get nodes -o yaml | grep -B1 -i vxlan
 ssh control1
 ```
 
-9. Check the network interface on the node again. This time you should see a vxlan interface named `vxlan.calico`. 
+9. Check the network interface on the node again. This time you should see a vxlan interface named `vxlan.calico`. The last interface in the following output.
 
 ```
 ip -c link
