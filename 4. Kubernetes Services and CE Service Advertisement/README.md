@@ -200,7 +200,7 @@ ________________________________________________________________________________
 
 `NodePort` service enables us to expose a service outside the cluster using a static port on the cluster nodes. To reach a NodePort service from outside the cluster, we just need to use any of the cluster nodes IP addresses along with a port on the node. The default port range for NodePort is 30000-32767, but this range can be changed or extended through the kube-apiserver configuration.
 
-1. Let's explore the iptables rules that implement the `customer` service. Find the service endpoints for `customer` `NodePort` service. Keeping using `worker1` to follow the instructions.
+1. Let's explore the iptables rules that implement the `customer` service. Find the service endpoints for `customer` `NodePort` service. Keep using `worker1` to follow the instructions.
 
 ```
 kubectl get endpoints -n yaobank customer
