@@ -441,13 +441,14 @@ You should receive an output similar to the following.
 bgppeer.projectcalico.org/bgppeer-global-64512 created
 ```
 
-7. Let's examine the BGP peering from worker1 node again by doing an SSH into the node.
+7. Let's examine the BGP peering from `worker1` node again by doing SSH into the node.
 
 ```
 ssh worker1
 ```
 
-Check the status of Calico on the node.
+8. Check the status of Calico on the node.
+
 ```
 sudo calicoctl node status
 ```
@@ -467,11 +468,11 @@ IPv6 BGP status
 No IPv6 peers found.
 ```
 
-The output above shows that Calico is now peered with the bastion node (`10.0.1.10`). This means Calico can share routes to and learn routes from bastion node. Note that you should receive a similar output if you run the same command on the other cluster nodes.
+The output above shows that Calico is now peered with the bastion node (`10.0.1.10`). This means Calico can share routes to and learn routes from `bastion` node. Note that you should receive a similar output if you run the same command on the other cluster nodes.
 
 In a real-world on-prem deployment, you would typically configure Calico nodes within a rack to peer with the ToRs (Top of Rack) routers, and the ToRs are then connected to the rest of the enterprise or data center network. In this way, if desired, pods can be reached from anywhere in then network. You could even go as far as giving some pods public IP address and have them accessible from the Internet if you wanted to.
 
-8. We're done with adding the peers, so exit from worker1 to return back to bastion node.
+9. We're done with adding the peers. Exit from `worker1` to return back to bastion node.
 
 ```
 exit
@@ -484,7 +485,7 @@ ________________________________________________________________________________
 
 Calico supports annotations on both namespaces and pods that can be used to control which IPPool or even which IP address a pod will receive its address from when it is created. In this example, we're going to create a namespace to host externally routable Pods.
 
-1. Let's create a namespace with the required Calico IPAM annotations. Examine the namespace configurations. Note how Calico IPAM annotation `cni.projectcalico.org/ipv4pools` is used with the name of IPPool `external-pool` to allocate IP addresses from IPPool `external-pool` to pods deployed in this namespace.
+1. Let's create a namespace with the required Calico IPAM annotations. Examine the namespace configurations below. Note how Calico IPAM annotation `cni.projectcalico.org/ipv4pools` is used with the name of IPPool `external-pool` to allocate IP addresses from IPPool `external-pool` to pods deployed in this namespace.
 
 ```
 kubectl apply -f -<<EOF
@@ -551,6 +552,7 @@ You should receive an output similar to the following.
 deployment.apps/nginx created
 networkpolicy.networking.k8s.io/nginx created
 ```
+
 4. Check `bastion` node's routing table again. You should have a new routing table entry.
 
 ```
@@ -579,6 +581,7 @@ The output above shows that the nginx pod has an IP address from the externally 
 
 ```
 curl 10.48.2.216
+
 ```
 
 This should have succeeded showing that the nginx pod is directly routable on the broader network.
@@ -613,9 +616,11 @@ Commercial support is available at
 
 ```
 calicoctl ipam show
+
 ```
 
 There is one IP address in use from the range `10.48.2.0/24`, which is for our nginx pod.
+
 ```
 +----------+----------------+-----------+------------+------------+
 | GROUPING |      CIDR      | IPS TOTAL | IPS IN USE |  IPS FREE  |
