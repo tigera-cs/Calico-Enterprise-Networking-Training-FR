@@ -540,9 +540,10 @@ In this section, we will use an ingress controller to expose the Yaobank Custome
 
 ```
 kubectl delete ns yaobank
+
 ```
 
-2. Deploy an ingress controller that listens to all namespaces
+2. Deploy an ingress controller that listens to all namespaces.
 
 Ingress is the built-in kubernetes framework for load-balancing http traffic. Cloud providers offer a similar functionality out of the box via cloud load-balancers. Ingress allows the manipulation of incoming http requests, natting/routing traffic to back-end services based on provided host/path, or even passing-through traffic. It can effectively provide L7-based policies and typical load-balancing features such as stickiness, health probes, or weight-based load-balancing.
 
@@ -749,6 +750,7 @@ EOF
 
 ```
 kubectl get pods -n yaobank
+
 ```
 ```
 NAME                        READY   STATUS    RESTARTS   AGE
@@ -758,7 +760,7 @@ summary-7579bd9566-hjkjt    1/1     Running   0          21m
 summary-7579bd9566-k6z4s    1/1     Running   0          21m
 ```
 
-5. Before applying the following manifest, make sure to update the `host` name by replacing `<LABNAME>` with the name of your lab instance in both of the following Ingress resources.
+5. Before applying the following manifest, make sure to update the `host` name by replacing `<LABNAME>` with the name of your lab instance in the following Ingress resources.
 
 
 ```
@@ -790,6 +792,7 @@ EOF
 
 ```
 kubectl get ingress -n yaobank
+
 ```
 
 ```
@@ -805,6 +808,7 @@ yaobank   <none>   yaobank.cenetworking.lynx.tigera.ca   10.0.1.30,10.0.1.31   8
 
 ```
 kubectl get svc -n yaobank
+
 ```
 
 ```
@@ -820,7 +824,7 @@ summary    ClusterIP   10.49.102.204   <none>        80/TCP     22m
 kubectl delete namespace yaobank
 ```
 
-_______________________________________________________________________________________________________________________________________________________________________
+______________________________________________________________________________________________________________________________________________________________________
 
 
 # Configure kube-proxy to use IPVS mode
