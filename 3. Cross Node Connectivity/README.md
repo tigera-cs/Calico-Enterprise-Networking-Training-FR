@@ -349,6 +349,8 @@ spec:
 EOF
 
 ```
+2. List the currentlly configured IPPools in the cluster.
+
 ```
 calicoctl get ippools
 ```
@@ -359,7 +361,7 @@ external-pool         10.48.2.0/24     all()
 pool2-ipv4-ippool     10.48.128.0/24   all() 
 ```
 
-2. We now have the followings:
+3. We now have the followings:
 
 | CIDR          |  Purpose                                                  |
 |---------------|-----------------------------------------------------------|
