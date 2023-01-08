@@ -406,7 +406,7 @@ IPv4 BGP status
 IPv6 BGP status
 No IPv6 peers found.
 ```
-4. The above output shows that currently Calico on worker1 is only peering with the other nodes (control1 and worker2) in the cluster and is not peering with any router outside of the cluster.
+4. The above output shows that currently Calico on `worker1` is only peering with the other nodes `control1` and `worker2` in the cluster and is not peering with any router outside of the cluster. Exit `worker1`
 
 ```
 exit
