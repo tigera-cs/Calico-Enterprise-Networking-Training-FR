@@ -2,9 +2,9 @@
 
 This lab provides the instructions to:
 
-* [Overview](https://github.com/Pooriya-a/CalicoEnterprise-Networking-Training/blob/main/2.%20Implement%20pod%20networking%20using%20Calico%20Enterprise%20CNI%20and%20IPAM/README.md#overview)
-* [Examine pod network connectivity using Calico Enterprise CNI](https://github.com/Pooriya-a/CalicoEnterprise-Networking-Training/blob/main/2.%20Implement%20pod%20networking%20using%20Calico%20Enterprise%20CNI%20and%20IPAM/README.md#examine-pod-network-connectivity-using-calico-enterprise-cni)
-* [Create an aditional Calico Enterprise IPPool](https://github.com/Pooriya-a/CalicoEnterprise-Networking-Training/blob/main/2.%20Implement%20pod%20networking%20using%20Calico%20Enterprise%20CNI%20and%20IPAM/README.md#create-an-aditional-calico-enterprise-ippool)
+* [Overview](https://github.com/tigera-cs/Calico-Enterprise-Networking-Training-FR/blob/main/2.%20Implement%20pod%20networking%20using%20Calico%20Enterprise%20CNI%20and%20IPAM/README.md#overview)
+* [Examine pod network connectivity using Calico Enterprise CNI](https://github.com/tigera-cs/Calico-Enterprise-Networking-Training-FR/blob/main/2.%20Implement%20pod%20networking%20using%20Calico%20Enterprise%20CNI%20and%20IPAM/README.md#examine-pod-network-connectivity-using-calico-enterprise-cni)
+* [Create an aditional Calico Enterprise IPPool](https://github.com/tigera-cs/Calico-Enterprise-Networking-Training-FR/blob/main/2.%20Implement%20pod%20networking%20using%20Calico%20Enterprise%20CNI%20and%20IPAM/README.md#create-an-aditional-calico-enterprise-ippool)
 
 
 ### Overview
