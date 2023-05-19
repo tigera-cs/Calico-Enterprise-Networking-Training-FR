@@ -589,7 +589,7 @@ metadata:
     kubernetes.io/ingress.class: "nginx"
 spec:
   rules:
-  - host: "manager.<LABNAME>.lynx.tigera.ca"
+  - host: "manager.<LABNAME>.labs.tigera.fr"
     http:
       paths:
       - path: /
@@ -606,7 +606,7 @@ EOF
 2. Check your access to the yaobank application and CE Manager UI using the following URLs. Make sure to replace `<LABNAME>` with the name of your lab instance.
 
 ```
-https://manager.<LABNAME>.lynx.tigera.ca
+https://manager.<LABNAME>.labs.tigera.fr
 ```
 
 3. Calico Enterprise Manager UI by default supports token-based auth. Let's create a serviceaccount so that we can use the associated token to log into the Manager UI. 
@@ -632,7 +632,7 @@ kubectl get secret $(kubectl get serviceaccount tigercub -o jsonpath='{range .se
 **Note:** Do not foroget to replace `<LABNAME>` with your lab instance name.
 
 ```
-https://manager.<LABNAME>.lynx.tigera.ca
+https://manager.<LABNAME>.labs.tigera.fr
 ```
 You shouls see a page similar to the following.
 
