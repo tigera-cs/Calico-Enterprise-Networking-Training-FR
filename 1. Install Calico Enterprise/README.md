@@ -2,8 +2,8 @@
 
 This lab provides the instructions to:
 
-* [Overview](https://github.com/tigera-cs/Calico-Enterprise-Networking-Training-FR)
-* [Install Calico Enterprise](https://github.com/Pooriya-a/CalicoEnterprise-Networking-Training/blob/main/1.%20Install%20Calico%20Enterprise/README.md#install-calico-enterprise)
+* [Overview](https://github.com/tigera-cs/Calico-Enterprise-Networking-Training-FR/blob/main/1.%20Install%20Calico%20Enterprise/README.md#overview)
+* [Install Calico Enterprise](https://github.com/tigera-cs/Calico-Enterprise-Networking-Training-FR/blob/main/1.%20Install%20Calico%20Enterprise/README.md#install-calico-enterprise)
 * [Install Calico Enterprise command line utility "calicoctl"](https://github.com/Pooriya-a/CalicoEnterprise-Networking-Training/blob/main/1.%20Install%20Calico%20Enterprise/README.md#install-calico-enterprise-command-line-utility-calicoctl)
 * [Deploy a three-tier sample application called "yaobank" (Yet Another Online Bank)](https://github.com/Pooriya-a/CalicoEnterprise-Networking-Training/blob/main/1.%20Install%20Calico%20Enterprise/README.md#deploy-a-three-tier-sample-application-called-yaobank-yet-another-online-bank)
 * [Access CE Manager UI using Ingress](https://github.com/Pooriya-a/CalicoEnterprise-Networking-Training/blob/main/1.%20Install%20Calico%20Enterprise/README.md#access-ce-manager-ui-using-ingress)
