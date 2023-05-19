@@ -119,7 +119,7 @@ kubectl get secret tigera-pull-secret --namespace=calico-system -o yaml | grep -
 
 7. Deploy the Egress gateway by browsing to the following link, copy the egress-gateway deployment, and deploy it in the cluster. Make sure the version of egress-gateway image matches the Calico Enterprise version deployed in the cluster.
 
-https://docs.tigera.io/networking/egress/egress-gateway-on-prem#deploy-a-group-of-egress-gateways 
+https://docs.tigera.io/calico-enterprise/3.15/networking/egress/egress-gateway-on-prem#deploy-a-group-of-egress-gateways
 
 **Note:** Since Tigera continously updates this manifest with the new features and configurations paramters, this manifest should be downloads from the Tigera docs site. Following is a sample manifest from the docs site.
 
