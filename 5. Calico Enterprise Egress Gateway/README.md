@@ -2,8 +2,8 @@
 
 This lab provides the instructions to:
 
-* [Overview](https://github.com/Pooriya-a/CalicoEnterprise-Networking-Training/blob/main/5.%20Calico%20Enterprise%20Egress%20Gateway/README.md#overview)
-* [Implement Calico Enterprise Egress Gateway](https://github.com/Pooriya-a/CalicoEnterprise-Networking-Training/blob/main/5.%20Calico%20Enterprise%20Egress%20Gateway/README.md#implement-calico-enterprise-egress-gateway)
+* [Overview](https://github.com/tigera-cs/Calico-Enterprise-Networking-Training-FR/blob/main/5.%20Calico%20Enterprise%20Egress%20Gateway/README.md#overview)
+* [Implement Calico Enterprise Egress Gateway](https://github.com/tigera-cs/Calico-Enterprise-Networking-Training-FR/blob/main/5.%20Calico%20Enterprise%20Egress%20Gateway/README.md#implement-calico-enterprise-egress-gateway)
 
 
 
