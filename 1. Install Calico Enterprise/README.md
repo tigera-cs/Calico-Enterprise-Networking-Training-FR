@@ -300,7 +300,7 @@ ________________________________________________________________________________
 calicoctl is the Calico Enterprise specific command line utility that allows you to create, read, update, and delete Calico Enterprise objects from the command line. 
 1. Follow the the instruction on the link below to **Install calicoctl as a binary on a single host** for Linux operating system. 
 
-https://docs.tigera.io/maintenance/clis/calicoctl/install#install-calicoctl-as-a-binary-on-a-single-host
+https://docs.tigera.io/calico-enterprise/3.15/operations/clis/calicoctl/install#install-calicoctl-as-a-binary-on-a-single-host
 
 2. Once you set the file to be exacutable, make sure you move it into your path.
 
