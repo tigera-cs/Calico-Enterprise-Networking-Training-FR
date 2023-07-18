@@ -38,7 +38,7 @@ Note the node on which the pod is running on (`ip-10-0-1-31.eu-west-1.compute.in
 2. Use `kubectl` to exec into the pod so we can check the pod networking details. 
 
 ```
-kubectl exec -ti -n yaobank $(kubectl get pods -n yaobank -l app=customer -o name) bash
+kubectl exec -ti -n yaobank $(kubectl get pods -n yaobank -l app=customer -o name) -- bash
 ```
 
 3. First we will use `ip addr` to list the addresses and associated network interfaces that the pod sees.
