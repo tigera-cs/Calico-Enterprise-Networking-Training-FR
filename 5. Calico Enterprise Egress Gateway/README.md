@@ -129,52 +129,6 @@ Note the following configurations:
 * `cni.projectcalico.org/ipv4pools: "[\"10.10.10.0/31\"]"` is the IPPool that was deployed to provide IP address to egress gateway pods. 
 
 
-```
-kubectl apply -f - <<EOF
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: egress-gateway
-  namespace: default
-  labels:
-    egress-code: red
-spec:
-  replicas: 1
-  selector:
-    matchLabels:
-      egress-code: red
-  template:
-    metadata:
-      annotations:
-        cni.projectcalico.org/ipv4pools: "[\"10.10.10.0/31\"]"
-      labels:
-        egress-code: red
-    spec:
-      imagePullSecrets:
-      - name: tigera-pull-secret
-      nodeSelector:
-        kubernetes.io/os: linux
-      containers:
-      - name: egress-gateway
-        image: quay.io/tigera/egress-gateway:v3.14.3
-        env:
-        - name: EGRESS_POD_IP
-          valueFrom:
-            fieldRef:
-              fieldPath: status.podIP
-        securityContext:
-          privileged: true
-        volumeMounts:
-        - mountPath: /var/run
-          name: policysync
-      terminationGracePeriodSeconds: 0
-      volumes:
-      - flexVolume:
-          driver: nodeagent/uds
-        name: policysync
-EOF
-
-```
 8. Make sure that the egress gateway pod is running.
 
 ```
@@ -185,9 +139,6 @@ kubectl get pods -o wide
 ```
 NAME                               READY   STATUS    RESTARTS   AGE    IP            NODE                                      NOMINATED NODE   READINESS GATES
 egress-gateway-74c977bb77-5bxsm    1/1     Running   0          133m   10.10.10.0    ip-10-0-1-31.eu-west-1.compute.internal   <none>           <none>
-nginx-deployment-9456bbbf9-2vkfx   1/1     Running   0          23h    10.48.0.208   ip-10-0-1-30.eu-west-1.compute.internal   <none>           <none>
-nginx-deployment-9456bbbf9-6g6gl   1/1     Running   0          23h    10.48.0.38    ip-10-0-1-31.eu-west-1.compute.internal   <none>           <none>
-nginx-deployment-9456bbbf9-rkl9s   1/1     Running   0          23h    10.48.0.37    ip-10-0-1-31.eu-west-1.compute.internal   <none>           <none>
 ```
 
 9. We will now need to configure our egress gateway client (app1 application) to use the egress gateway. We could configure specific pods/deployments in app1 namespace to use the egress gateway by annotating the pods/deployment or all the pods/deployments in app1 namespace by annotating the namespace. Since we only have a single app in app1 namespace, we will configure the annotation on the namespace.
@@ -422,21 +373,13 @@ Every 2.0s: kubectl get pods -o wide                                            
 
 NAME                               READY   STATUS    RESTARTS   AGE     IP            NODE                                      NOMINATED NODE   READINESS GATES
 egress-gateway-5fb89cf946-snznd    0/1     Running   0          3m25s   10.10.10.0    ip-10-0-1-31.eu-west-1.compute.internal   <none>           <none>
-nginx-deployment-9456bbbf9-2vkfx   1/1     Running   0          25h     10.48.0.208   ip-10-0-1-30.eu-west-1.compute.internal   <none>           <none>
-nginx-deployment-9456bbbf9-6g6gl   1/1     Running   0          25h     10.48.0.38    ip-10-0-1-31.eu-west-1.compute.internal   <none>           <none>
-nginx-deployment-9456bbbf9-rkl9s   1/1     Running   0          25h     10.48.0.37    ip-10-0-1-31.eu-west-1.compute.internal   <none>           <none>****
 ```
 
-28. Follow the same connectivity steps that were done from step 14-18 above. You should still be able to make connections from `app1` to `10.0.1.10` as shown below and the connections should appear to be coming from egress gateway pod. The reason is that egress gateway daemon is still running in the container and just the ICMP probe has failed 
+28. Follow the same connectivity steps that were done from step 14-18 above. You should not be able to make connections from `app1` to `10.0.1.10` as shown below 
 
 ```
-Listening on 0.0.0.0 7777
-Connection received on 10.10.10.0 35615
-Connection received on 10.10.10.0 39185
-Connection received on 10.10.10.0 36269
-Connection received on 10.10.10.0 42397
-Connection received on 10.10.10.0 44511
-Connection received on 10.10.10.0 42293
+# nc -zv 10.0.1.10 7777
+nc: 10.0.1.10 (10.0.1.10:7777): Host is unreachable
 ```
 
 29. Clean up the resources that were deployed for the purpose of this lab.
