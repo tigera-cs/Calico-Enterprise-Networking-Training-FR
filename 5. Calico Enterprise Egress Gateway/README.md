@@ -218,7 +218,7 @@ filter rt_import {
                         reject;
         }
 ```
-And restart bird
+And restart bird daemon
 
 ```
 sudo systemctl restart bird
